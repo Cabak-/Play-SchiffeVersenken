@@ -4,6 +4,9 @@ import PlayerMessages._
 /** trait to control the gameplay */
 trait GameController {
 
+  /** id of the Game */
+  def id: Int
+
 	/** size of the fields */
 	def fieldSize: Int
 
@@ -71,7 +74,7 @@ trait GameController {
 }
 
 /** concrete game controller class for asynchronous play via a browser interface */
-class ConcreteGameController(val player1: Player, val player2: RemotePlayer, val fieldSize: Int, val boatCount: Array[Int]) extends GameController {
+class ConcreteGameController(val id: Int, val player1: RemotePlayer, val player2: RemotePlayer, val fieldSize: Int, val boatCount: Array[Int]) extends GameController {
 
 	/** array of player */
 	val players: Array[Player] = Array(player1,player2)
@@ -86,7 +89,7 @@ class ConcreteGameController(val player1: Player, val player2: RemotePlayer, val
 
 
 /** concrete game controller class with both players playing locally */
-class ConsoleGameController(val player1: ConsolePlayer, val player2: ConsolePlayer, val fieldSize: Int, val boatCount: Array[Int]) extends GameController {
+class ConsoleGameController(val id: Int, val player1: ConsolePlayer, val player2: ConsolePlayer, val fieldSize: Int, val boatCount: Array[Int]) extends GameController {
 
 	/** array of player */
 	val players: Array[Player] = Array(player1,player2)
