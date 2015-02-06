@@ -1,0 +1,40 @@
+
+body {
+    background-color: White;
+}
+main{
+    position: absolute;
+    color: white;
+    width: 70%;
+    height: 90%;
+    left: 5%;
+    top: 5%;
+    background-color: black;
+    opacity: .6;
+}
+#textbox{
+    position: relative;
+    width: 90%;
+    left: 5%;
+    top: 5%;
+    color: orange;
+}
+#textbox a:link{
+    color: blanchedalmond;
+}
+#textbox a:visited{
+    color: blanchedalmond;
+}
+#textbox a:hover{
+    color: blanchedalmond;
+}
+#right{
+    position: absolute;
+    height: 90%;
+    width: 22%;
+    top: 5%;
+    right: 1%;
+    background-image: url("../images/battleship_web.jpg");
+    background-repeat: no-repeat;
+    background-color: #202020;
+}

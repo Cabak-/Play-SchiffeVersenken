@@ -1,0 +1,19 @@
+@(message: String)
+@main("BattleShips") {
+
+    <div id="textbox">
+    <h1>BattleShips</h1>
+
+    <p>
+        Zum Starten eines neuen Spieles drücken Sie auf Spiel Starten!
+    </p>
+
+    <p>
+        Spielregeln findes sie <a href="http://de.wikipedia.org/wiki/Schiffe_versenken">hier!</a>
+    </p>
+        <form action="@routes.Application.authenticate" method="post">
+            Name: <input type="text" value="" id="name" name="name" required="true">
+            <input type="submit" value="Spiel Starten">
+        </form>
+    </div>
+}
