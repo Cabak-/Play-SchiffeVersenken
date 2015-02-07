@@ -38,3 +38,35 @@ main{
     background-repeat: no-repeat;
     background-color: #202020;
 }
+
+table.game_area {
+    background-color: #ddd;
+    color: black;
+    font-weight: bold;
+    font-size: 1.3em;
+    border: 3px solid black;
+    text-align: center;
+    padding: 0px;
+    border-spacing: 0px;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+table.game_area td {
+    border: 1px solid black;
+    width: 30px;
+    height: 30px;
+    padding: 0px;
+}
+
+table.game_area td:hover {
+    background-color: yellow;
+}
+
+div#monitor_own {
+    float: left;
+}
+
+div#monitor_opponent {
+
+}

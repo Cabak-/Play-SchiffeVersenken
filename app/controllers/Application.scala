@@ -34,7 +34,7 @@ object Application extends Controller {
     Ok(views.html.waiting())
   }
 
-  def game = Action {
+  def game = Action { implicit request =>
 
     val userID : String = Cache.getAs[String]("id").getOrElse(null)
     println(userID)
@@ -45,12 +45,12 @@ object Application extends Controller {
       Ok(views.html.game("Das Spiel kann beginnen!! \n "
         + "Spieler 1 : " + arrayOfGames(0).players(0).playerName
         + " Spieler 2 : " + arrayOfGames(0).players(1).playerName
-        + " Game ID: " + arrayOfGames(0).id, arrayOfGames(0)))
+        + " Game ID: " + arrayOfGames(0).id, arrayOfGames(0)),request.session)
     }else if (userID == (arrayOfGames(0).players(0).playerName) || userID == (arrayOfGames(0).players(1).playerName)){
       Ok(views.html.game("Das Spiel kann beginnen!! \n "
         + "Spieler 1 : " + arrayOfGames(0).players(0).playerName
         + " Spieler 2 : " + arrayOfGames(0).players(1).playerName
-        + " Game ID: " + arrayOfGames(0).id, arrayOfGames(0)))
+        + " Game ID: " + arrayOfGames(0).id, arrayOfGames(0)),request.session)
     }else{
       arrayOfPlayers(0) = null
       arrayOfPlayers(1) = null

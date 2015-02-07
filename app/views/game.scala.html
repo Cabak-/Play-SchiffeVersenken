@@ -1,20 +1,64 @@
-@(message: String, game: GameController)
-@main("Playing against other Player") {
+@(message: String, game: GameController)(implicit session: play.api.mvc.Session)
+    @main("Playing against other Player") {
 
         @message
         <a href="@routes.Application.endGame" >Spiel beenden!!</a>
 
 
-        @game.gameState.fieldState1.uncoverCell(0,9,1)
-        <table>
-            @for(y <- 0 to 9) {
+        <script language="javascript">
+            function submitCoordinates(x,y) {
+                alert(x+','+y);
+            }
+        </script>
+
+        <p>Session-ID: @session.get("id")</p>
+        <p>Name: "@session.get("name")"</p>
+        <p>Spieler 1: "@game.players(0).playerName"</p>
+        <p>Spieler 2: "@game.players(1).playerName"</p>
+
+        @if(session.get("name") == game.players(0).playerName) {
+        @* @if(session.get("name").equals(game.players(0).playerName)) {*@
+            <p>Du bist Spieler 1!</p>
+        } else {
+            <p>Du bist Spieler 2!</p>
+        }
+
+        @{
+            game.gameState.fieldState1.uncoverCell(0, 9, 1)
+            game.gameState.fieldState2.uncoverCell(9, 0, 1)
+        }
+
+        @*
+        @ownFieldState() = @{ if(session.get("name") == game.players(0).playerName) game.gameState.fieldState1 else game.gameState.fieldState2 }
+        @opponentFieldState() = @{ if(session.get("name") == game.players(0).playerName) game.gameState.fieldState2 else game.gameState.fieldState1 }
+
+        @*
+        @{ val ownFieldState = { if(session.get("name") == game.players(0).playerName) game.gameState.fieldState1 else game.gameState.fieldState2 }}
+        @{ val opponentFieldState = { if(session.get("name") == game.players(0).playerName) game.gameState.fieldState2 else game.gameState.fieldState1 }}
+        *@
+
+        <div id="monitor_own">
+            <table id="own_game_area" class="game_area">
+                @for(y <- 0 until game.fieldSize) {
+                    <tr>
+                        @for(x <- 0 until game.fieldSize) {
+                            <td onclick="submitCoordinates(@x,@y);">@game.gameState.fieldState1.visualCells(x)(y)</td>
+                        }
+                    </tr>
+                }
+            </table>
+        </div>
+
+        <div id="monitor_opponent">
+            <table id="opponent_game_area" class="game_area">
+            @for(y <- 0 until game.fieldSize) {
                 <tr>
-                    @for(x <- 0 to 9) {
-                        <td>@game.gameState.fieldState1.visualCells(x)(y)</td>
+                    @for(x <- 0 until game.fieldSize) {
+                        <td onclick="submitCoordinates(@x,@y);">@game.gameState.fieldState2.visualCells(x)(y)</td>
                     }
                 </tr>
             }
-
-        </table>
+            </table>
+        </div>
 
 }
