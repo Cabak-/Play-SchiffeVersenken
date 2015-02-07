@@ -5,23 +5,17 @@ import models._
 import play.api._
 import play.api.mvc._
 import scala.util.control.Breaks._
+import play.api.cache.Cache
+import play.api.Play.current
 
 
 object Application extends Controller {
 
   val arrayOfGames: Array[GameController] = new Array[GameController](1)
-  var arrayOfPlayers: Array[RemotePlayer] = new Array[RemotePlayer](2)
+  val arrayOfPlayers: Array[RemotePlayer] = new Array[RemotePlayer](2)
 
-  def index = Action { implicit request =>
-    request.session.get("name").map { user =>
+  def index = Action {
       Ok(views.html.index(""))
-    }.getOrElse {
-      Ok(views.html.index("")).withSession(
-        "name" -> "default" +
-        "id" -> "default"
-      )
-    }
-
   }
 
   def authenticate = Action { implicit request =>
@@ -35,52 +29,55 @@ object Application extends Controller {
           }
         }
       }
-      if (waitFor2ndPlayer) {
-        Redirect(routes.Application.game).withSession(
-          request.session + ("name" -> player.playerName
-            + "id" -> player.playerID)
-        )
-      } else {
-        Ok(views.html.index("Leider hat sich kein Spieler Gefunden! BItte versuchen sie es später noch einmal!")).withSession(
-          request.session + ("name" -> player.playerName
-            + "id" -> player.playerID)
-        )
-      }
+    Cache.set("name", player.playerName)
+    Cache.set("id", player.playerID)
+    Ok(views.html.waiting())
   }
 
-  def game = Action { implicit request =>
-    request.session.get("id").map { userID =>
-      if (arrayOfGames(0) == null) {
-        val newGameController: ConcreteGameController = new ConcreteGameController(createID(), arrayOfPlayers(0), arrayOfPlayers(1))
-        arrayOfGames(0) = newGameController
-        Ok(views.html.game("Das Spiel kann beginnen!! \n "
-          + "Spieler 1 : " + arrayOfGames(0).players(0).playerName
-          + " Spieler 2 : " + arrayOfGames(0).players(1).playerName
-          + " Game ID: " + arrayOfGames(0).id, arrayOfGames(0)))
-      }else if (userID.equals(arrayOfGames(0).players(0).playerID) || userID.equals(arrayOfGames(0).players(1).playerID)){
-        Ok(views.html.game("Das Spiel kann beginnen!! \n "
-          + "Spieler 1 : " + arrayOfGames(0).players(0).playerName
-          + " Spieler 2 : " + arrayOfGames(0).players(1).playerName
-          + " Game ID: " + arrayOfGames(0).id, arrayOfGames(0)))
-      }else{
-        arrayOfPlayers(0) = null
-        arrayOfPlayers(1) = null
-        arrayOfGames(0) = null
-        Ok(views.html.index("Leider sind alle game Instanzen bereits vergeben! Versuchen sie es später bitte noch einmal!"))
-      }
-    }.getOrElse {
-      Unauthorized("Keine Session!")
+  def game = Action {
+
+    val userID : String = Cache.getAs[String]("id").getOrElse(null)
+    println(userID)
+    println(arrayOfPlayers(1).playerID)
+    if (arrayOfGames(0) == null) {
+      val newGameController: ConcreteGameController = new ConcreteGameController(createID(), arrayOfPlayers(0), arrayOfPlayers(1))
+      arrayOfGames(0) = newGameController
+      Ok(views.html.game("Das Spiel kann beginnen!! \n "
+        + "Spieler 1 : " + arrayOfGames(0).players(0).playerName
+        + " Spieler 2 : " + arrayOfGames(0).players(1).playerName
+        + " Game ID: " + arrayOfGames(0).id, arrayOfGames(0)))
+    }else if (userID == (arrayOfGames(0).players(0).playerName) || userID == (arrayOfGames(0).players(1).playerName)){
+      Ok(views.html.game("Das Spiel kann beginnen!! \n "
+        + "Spieler 1 : " + arrayOfGames(0).players(0).playerName
+        + " Spieler 2 : " + arrayOfGames(0).players(1).playerName
+        + " Game ID: " + arrayOfGames(0).id, arrayOfGames(0)))
+    }else{
+      arrayOfPlayers(0) = null
+      arrayOfPlayers(1) = null
+      arrayOfGames(0) = null
+      Ok(views.html.index("Leider sind alle game Instanzen bereits vergeben! Versuchen sie es später bitte noch einmal!"))
     }
   }
 
-  def waitFor2ndPlayer: Boolean =  {
-    for( i <- 0 until 10){
-      Thread.sleep(1000)
-      if (arrayOfPlayers(1) != null) {
-        return true
+  def waiting = Action { implicit request =>
+    var redirect : Boolean = false
+    breakable{
+      for( i <- 0 until 10){
+        Thread.sleep(1000)
+        if (arrayOfPlayers(1) != null) {
+          redirect = true
+          break
+        }
       }
     }
-    return false
+    if(redirect){
+      Redirect(routes.Application.game()).withCookies()
+    }else{
+    for(i <- 0 until arrayOfPlayers.length-1){
+      arrayOfPlayers(i) = null
+    }
+    Ok(views.html.index("Leider hat sich kein Spieler Gefunden! BItte versuchen sie es später noch einmal!"))
+    }
   }
 
   def createID() : String = {

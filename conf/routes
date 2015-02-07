@@ -5,8 +5,11 @@
 # Home page
 GET         /                    controllers.Application.index
 
-# EndGame page
-POST        /searching           controllers.Application.authenticate
+# authentifizierung page
+POST        /           controllers.Application.authenticate
+
+# SearchingFor2ndPlayer page
+GET        /searching                   controllers.Application.waiting
 
 # Game page
 GET         /game                controllers.Application.game
