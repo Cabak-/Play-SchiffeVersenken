@@ -47,13 +47,15 @@ object Application extends Controller {
 
   def game = Action {
     if (arrayOfGames(0) == null) {
-    val gameController: ConcreteGameController = new ConcreteGameController(createID(), arrayOfPlayers(0), arrayOfPlayers(1))
-    arrayOfGames(0) = gameController
-  }
+      val newGameController: ConcreteGameController = new ConcreteGameController(createID(), arrayOfPlayers(0), arrayOfPlayers(1))
+      arrayOfGames(0) = newGameController
+    }
+    val gameController: GameController = arrayOfGames(0)
+
     Ok(views.html.game("Das Spiel kann beginnen!! \n "
       + "Spieler 1 : " + arrayOfPlayers(0).playerName
       + " Spieler 2 : " + arrayOfPlayers(1).playerName
-      + " Game ID: " + arrayOfGames(0).id))
+      + " Game ID: " + arrayOfGames(0).id, gameController))
   }
 
   def waitFor2ndPlayer: Boolean =  {
