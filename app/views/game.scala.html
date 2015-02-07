@@ -1,4 +1,4 @@
-@(message: String)
+@(message: String, game: GameController)
 @main("Playing against other Player") {
 
         @message
@@ -9,7 +9,7 @@
             @for(lines <- game.gameState.fieldState1.visualCells) {
                 <tr>
                     @for(cell <- lines) {
-                        <td>cell</td>
+                        <td>@cell</td>
                     }
                 </tr>
             }
