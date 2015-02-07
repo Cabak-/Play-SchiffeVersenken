@@ -46,15 +46,17 @@ object Application extends Controller {
   }
 
   def game = Action {
-    val gameController : ConcreteGameController = new ConcreteGameController(createID(), arrayOfPlayers(0), arrayOfPlayers(1))
+    if (arrayOfGames(0) == null) {
+    val gameController: ConcreteGameController = new ConcreteGameController(createID(), arrayOfPlayers(0), arrayOfPlayers(1))
     arrayOfGames(0) = gameController
+  }
     Ok(views.html.game("Das Spiel kann beginnen!! \n "
       + "Spieler 1 : " + arrayOfPlayers(0).playerName
       + " Spieler 2 : " + arrayOfPlayers(1).playerName
       + " Game ID: " + arrayOfGames(0).id))
   }
 
-  def waitFor2ndPlayer: Boolean = {
+  def waitFor2ndPlayer: Boolean =  {
     for( i <- 0 until 10){
       Thread.sleep(1000)
       if (arrayOfPlayers(1) != null) {

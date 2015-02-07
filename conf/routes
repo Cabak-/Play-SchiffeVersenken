@@ -6,7 +6,7 @@
 GET     /                           controllers.Application.index
 
 # EndGame page
-POST    /                           controllers.Application.authenticate
+POST    /searching                           controllers.Application.authenticate
 
 # Game page
 GET    /game                       controllers.Application.game
