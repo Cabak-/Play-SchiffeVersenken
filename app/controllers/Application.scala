@@ -14,10 +14,11 @@ object Application extends Controller {
 
   def index = Action { implicit request =>
     request.session.get("name").map { user =>
-      Ok(views.html.index("Welcome!"))
+      Ok(views.html.index(""))
     }.getOrElse {
-      Ok(views.html.index("Welcome!")).withSession(
-        "name" -> "default"
+      Ok(views.html.index("")).withSession(
+        "name" -> "default" +
+        "id" -> "default"
       )
     }
 
@@ -47,7 +48,8 @@ object Application extends Controller {
       }
   }
 
-  def game = {
+  def game = Action { implicit request =>
+    request.session.get("id").map { userID =>
       if (arrayOfGames(0) == null) {
         val newGameController: ConcreteGameController = new ConcreteGameController(createID(), arrayOfPlayers(0), arrayOfPlayers(1))
         arrayOfGames(0) = newGameController
@@ -55,10 +57,20 @@ object Application extends Controller {
           + "Spieler 1 : " + arrayOfGames(0).players(0).playerName
           + " Spieler 2 : " + arrayOfGames(0).players(1).playerName
           + " Game ID: " + arrayOfGames(0).id, arrayOfGames(0)))
-      }else {
+      }else if (userID.equals(arrayOfGames(0).players(0).playerID) || userID.equals(arrayOfGames(0).players(1).playerID)){
+        Ok(views.html.game("Das Spiel kann beginnen!! \n "
+          + "Spieler 1 : " + arrayOfGames(0).players(0).playerName
+          + " Spieler 2 : " + arrayOfGames(0).players(1).playerName
+          + " Game ID: " + arrayOfGames(0).id, arrayOfGames(0)))
+      }else{
+        arrayOfPlayers(0) = null
+        arrayOfPlayers(1) = null
+        arrayOfGames(0) = null
         Ok(views.html.index("Leider sind alle game Instanzen bereits vergeben! Versuchen sie es später bitte noch einmal!"))
       }
-
+    }.getOrElse {
+      Unauthorized("Keine Session!")
+    }
   }
 
   def waitFor2ndPlayer: Boolean =  {
