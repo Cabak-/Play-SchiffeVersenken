@@ -28,8 +28,12 @@ object Application extends Controller {
       val player : RemotePlayer = new RemotePlayer(createID(), name(0))
       if(arrayOfPlayers(0) == null){
         arrayOfPlayers(0) = player
-      }else{
+      }else if (arrayOfPlayers(1) == null){
         arrayOfPlayers(1) = player
+      }else{
+        Ok(views.html.index("Tut mir Leid es sind alle Spieler und Spiele vergeben!")).withSession(
+          "name" -> "default"
+        )
       }
       if (waitFor2ndPlayer) {
         Redirect(routes.Application.game).withSession(
