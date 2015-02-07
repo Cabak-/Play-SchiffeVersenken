@@ -1,4 +1,6 @@
-@(message: String, game: GameController)(implicit session: play.api.mvc.Session)
+@import play.api.Play.current
+
+@(message: String, game: GameController)
     @main("Playing against other Player") {
 
         @message
@@ -6,17 +8,120 @@
 
 
         <script language="javascript">
-            function submitCoordinates(x,y) {
-                alert(x+','+y);
+            var fieldSize = 10; // size of the field
+            var boatLength = 4; // length of the boat
+            var boatStart = null; // first selected coordinate of the boat
+
+            /** getElementsByClassName function (not available for all browsers) */
+            function getElementsByClassName(node,classname) {
+                if (node.getElementsByClassName) { // use native implementation if available
+                return node.getElementsByClassName(classname);
+                } else {
+                return (function getElementsByClass(searchClass,node) {
+                if ( node == null )
+                node = document;
+                var classElements = [],
+                els = node.getElementsByTagName("*"),
+                elsLen = els.length,
+                pattern = new RegExp("(^|\\s)"+searchClass+"(\\s|$)"), i, j;
+
+                for (i = 0, j = 0; i < elsLen; i++) {
+                if ( pattern.test(els[i].className) ) {
+                classElements[j] = els[i];
+                j++;
+                }
+                }
+                return classElements;
+                })(classname, node);
+                }
             }
+
+            /** function to place a boat by selecting two coordinates */
+            function placeBoat(x,y) {
+                if (boatStart == null) {
+                    boatStart = new Array(x,y)
+                    alert('Start at ' + x + ',' + y ) ;
+                } else {
+                    if (x == boatStart[0] && y == boatStart[1] ) { // same coordinates: remove the first point
+                        boatStart = null ;
+                        alert ( 'Removed the start of the boat' )
+                    } else if ( x == boatStart[0] && Math.abs(y - boatStart[1]) < boatLength) { // vertical placement
+                        if (y > boatStart[1]) {
+                            if (boatStart[1] + boatLength - 1 >= fieldSize) return;
+                            alert ( 'Placed boat: ' + boatStart[0] + ',' + boatStart[1] + ' - v' )
+                        } else {
+                            if (boatStart[1] - boatLength - 1 < 0) return;
+                            alert ( 'Placed boat: ' + x + ',' + (boatStart[1] - boatLength + 1) + ' - v' )
+                        }
+                    } else if ( y == boatStart[ 1 ] && Math.abs(x - boatStart[0]) < boatLength) { // horizontal placement
+                        if (x > boatStart[0]) {
+                            if (boatStart[0] + boatLength - 1 >= fieldSize) return;
+                            alert ( 'Placed boat: ' + boatStart[0] + ',' + boatStart[ 1 ] + ' - h' )
+                        } else {
+                            if (boatStart[0] - boatLength - 1 < 0) return;
+                            alert ( 'Placed boat: ' + (boatStart[0] - boatLength + 1) + ',' + y + ' - h' )
+                        }
+                    }
+                }
+            }
+
+            /** mouseover-function for the boat-placement field */
+            function placementMouseEvent(element,x,y) {
+                resetHighlights();
+                if (boatStart == null) {
+                    element.style.backgroundColor = "#00F";
+                } else {
+                    if (x == boatStart[ 0 ] && y == boatStart[ 1 ] ) { // same coordinates: remove the first point
+                        element.style.backgroundColor = "#F00";
+                    } else if ( x == boatStart[ 0 ] && Math.abs(y - boatStart[1]) < boatLength) { // vertical placement
+                        var first = boatStart[1];
+                        var last = boatStart[1] + boatLength - 1;
+                        if (y < boatStart[1]) {
+                            first = boatStart[1] - boatLength + 1;
+                            last = boatStart[1];
+                        }
+                        for ( var i=first ; i <= last; i ++ ) {
+                            document.getElementById("own_cell_"+x+"_"+i).style.backgroundColor = "#0F0";
+                        }
+                    } else if ( y == boatStart[ 1 ] && Math.abs(x - boatStart[0]) < boatLength) { // horizontal placement
+                        var first = boatStart[0];
+                        var last = boatStart[0] + boatLength - 1;
+                        if (x < boatStart[0]) {
+                            first = boatStart[0] - boatLength + 1;
+                            last = boatStart[0];
+                        }
+                        for ( var i=first ; i <= last; i ++ ) {
+                        document.getElementById("own_cell_"+i+"_"+y).style.backgroundColor = "#0F0";
+                        }
+                    }
+                }
+            }
+
+            /** reset all the cell colors */
+            function resetHighlights() {
+                var elements = getElementsByClassName(document, "own_cell");
+                for (var i = 0; i < elements.length; i++) {
+                    if (boatStart != null && elements[i].id == "own_cell_"+boatStart[0]+"_"+boatStart[1]) {
+                        elements[i].style.backgroundColor = "#FF0" ;
+                    } else {
+                        elements[i].style.backgroundColor = "#DDD" ;
+                    }
+                }
+            }
+
+            /** function to shoot at a coordinate */
+            function shoot(x,y) {
+                alert('Shoot at '+x+','+y);
+            }
+
         </script>
 
-        <p>Session-ID: @session.get("id")</p>
-        <p>Name: "@session.get("name")"</p>
+        <p>Session-ID: @play.api.cache.Cache.get("id")</p>
+        <p>Name: "@play.api.cache.Cache.get("name")"</p>
         <p>Spieler 1: "@game.players(0).playerName"</p>
         <p>Spieler 2: "@game.players(1).playerName"</p>
 
-        @if(session.get("name") == game.players(0).playerName) {
+        @if(play.api.cache.Cache.get("name") == game.players(0).playerName) {
         @* @if(session.get("name").equals(game.players(0).playerName)) {*@
             <p>Du bist Spieler 1!</p>
         } else {
@@ -26,6 +131,21 @@
         @{
             game.gameState.fieldState1.uncoverCell(0, 9, 1)
             game.gameState.fieldState2.uncoverCell(9, 0, 1)
+
+
+            if (game.gameState.isPlacementFinished) {
+                if (game.gameState.isPlayersTurn(game.players(0))) {
+                    <p>Bitte schiesse auf ein Feld:</p>
+                } else {
+                    <p>Warte auf Schuss des Gegners...</p>
+                }
+            } else {
+                if (game.gameState.isPlayersTurn(game.players(0))) {
+                    <p>Bitte platziere ein Boot:</p>
+                } else {
+                    <p>Warte darauf, dass der Gegner ein Boot platziert...</p>
+                }
+            }
         }
 
         @*
@@ -38,11 +158,12 @@
         *@
 
         <div id="monitor_own">
-            <table id="own_game_area" class="game_area">
+            <h2>Eigenes Feld:</h2>
+            <table id="own_game_area" class="game_area"  onmouseout="resetHighlights()">
                 @for(y <- 0 until game.fieldSize) {
                     <tr>
                         @for(x <- 0 until game.fieldSize) {
-                            <td onclick="submitCoordinates(@x,@y);">@game.gameState.fieldState1.visualCells(x)(y)</td>
+                            <td id="own_cell_@{x}_@y" class="own_cell" onclick="placeBoat(@x,@y)" onmouseenter="placementMouseEvent(this,@x,@y)">@game.gameState.fieldState1.visualCells(x)(y)</td>
                         }
                     </tr>
                 }
@@ -50,11 +171,12 @@
         </div>
 
         <div id="monitor_opponent">
+            <h2>Feld des Gegners:</h2>
             <table id="opponent_game_area" class="game_area">
             @for(y <- 0 until game.fieldSize) {
                 <tr>
                     @for(x <- 0 until game.fieldSize) {
-                        <td onclick="submitCoordinates(@x,@y);">@game.gameState.fieldState2.visualCells(x)(y)</td>
+                        <td id="opponent_cell_@{x}_@y"  onclick="shoot(@x,@y)">@game.gameState.fieldState2.visualCells(x)(y)</td>
                     }
                 </tr>
             }
