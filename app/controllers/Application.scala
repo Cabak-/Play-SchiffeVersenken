@@ -4,6 +4,7 @@ import java.lang.ProcessBuilder.Redirect
 import models._
 import play.api._
 import play.api.mvc._
+import scala.util.control.Breaks._
 
 
 object Application extends Controller {
@@ -24,42 +25,40 @@ object Application extends Controller {
 
   def authenticate = Action { implicit request =>
     val name = request.body.asFormUrlEncoded.get("name") // Insert a player
-    request.session.get("name").map { user =>
       val player : RemotePlayer = new RemotePlayer(createID(), name(0))
-      if(arrayOfPlayers(0) == null){
-        arrayOfPlayers(0) = player
-      }else if (arrayOfPlayers(1) == null){
-        arrayOfPlayers(1) = player
-      }else{
-        Ok(views.html.index("Tut mir Leid es sind alle Spieler und Spiele vergeben!")).withSession(
-          "name" -> "default"
-        )
+      breakable{
+        for (i <- 0 to arrayOfPlayers.length - 1) {
+          if (arrayOfPlayers(i) == null) {
+            arrayOfPlayers(i) = player
+            break
+          }
+        }
       }
       if (waitFor2ndPlayer) {
         Redirect(routes.Application.game).withSession(
-          request.session + ("name" -> name(0))
+          request.session + ("name" -> player.playerName
+            + "id" -> player.playerID)
         )
       } else {
-        Redirect(routes.Application.index).withSession(
-          request.session + ("name" -> name(0))
+        Ok(views.html.index("Leider hat sich kein Spieler Gefunden! BItte versuchen sie es später noch einmal!")).withSession(
+          request.session + ("name" -> player.playerName
+            + "id" -> player.playerID)
         )
       }
-    }.getOrElse {
-      Unauthorized("Oops, you are not connected")
-    }
   }
 
-  def game = Action {
-    if (arrayOfGames(0) == null) {
-      val newGameController: ConcreteGameController = new ConcreteGameController(createID(), arrayOfPlayers(0), arrayOfPlayers(1))
-      arrayOfGames(0) = newGameController
-    }
-    val gameController: GameController = arrayOfGames(0)
+  def game = {
+      if (arrayOfGames(0) == null) {
+        val newGameController: ConcreteGameController = new ConcreteGameController(createID(), arrayOfPlayers(0), arrayOfPlayers(1))
+        arrayOfGames(0) = newGameController
+        Ok(views.html.game("Das Spiel kann beginnen!! \n "
+          + "Spieler 1 : " + arrayOfGames(0).players(0).playerName
+          + " Spieler 2 : " + arrayOfGames(0).players(1).playerName
+          + " Game ID: " + arrayOfGames(0).id, arrayOfGames(0)))
+      }else {
+        Ok(views.html.index("Leider sind alle game Instanzen bereits vergeben! Versuchen sie es später bitte noch einmal!"))
+      }
 
-    Ok(views.html.game("Das Spiel kann beginnen!! \n "
-      + "Spieler 1 : " + arrayOfPlayers(0).playerName
-      + " Spieler 2 : " + arrayOfPlayers(1).playerName
-      + " Game ID: " + arrayOfGames(0).id, gameController))
   }
 
   def waitFor2ndPlayer: Boolean =  {
