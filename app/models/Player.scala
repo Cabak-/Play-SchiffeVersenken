@@ -4,6 +4,9 @@ import PlayerMessages._
 /** trait for players that participate in the game */
 trait Player {
 
+  /** Id of the Player */
+  def playerID: String
+
   /** name of the player */
   def playerName: String
 
@@ -30,7 +33,7 @@ trait Player {
 
 
 /** a remote player who plays in the browser */
-class RemotePlayer(val playerName: String) extends Player {
+class RemotePlayer(val playerID: String, val playerName: String) extends Player {
 
   /** uses a browser view */
   val view: View = new BrowserView(this)
@@ -49,7 +52,7 @@ class RemotePlayer(val playerName: String) extends Player {
 
 
 /** a local player that answers request by console prompts */
-class ConsolePlayer(val playerName: String) extends Player {
+class ConsolePlayer(val playerID: String, val playerName: String) extends Player {
 
   /** uses a console view */
   val view: ConsoleView = new ConsoleView(this)

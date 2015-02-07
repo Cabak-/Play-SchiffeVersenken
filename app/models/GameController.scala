@@ -5,19 +5,22 @@ import PlayerMessages._
 trait GameController {
 
   /** id of the Game */
-  def id: Int
+  def id: String
 
 	/** size of the fields */
-	def fieldSize: Int
+	def fieldSize: Int = 10
 
 	/** amount of boats of the length 0 to 5 */
-	def boatCount: Array[Int]
+	def boatCount: Array[Int] = Array(0,0,4,3,2,1)
 
 	/** the total amount of boats for each player */
 	def totalBoatCount: Int
 
 	/** the player objects */
 	def players: Array[Player]
+
+  /** total amount of players */
+  def totalPlayerCount: Int = 2
 
 	/** the game state */
 	def gameState: GameState
@@ -74,7 +77,7 @@ trait GameController {
 }
 
 /** concrete game controller class for asynchronous play via a browser interface */
-class ConcreteGameController(val id: Int, val player1: RemotePlayer, val player2: RemotePlayer, val fieldSize: Int, val boatCount: Array[Int]) extends GameController {
+class ConcreteGameController(val id: String, val player1: RemotePlayer, val player2: RemotePlayer) extends GameController {
 
 	/** array of player */
 	val players: Array[Player] = Array(player1,player2)
@@ -89,7 +92,7 @@ class ConcreteGameController(val id: Int, val player1: RemotePlayer, val player2
 
 
 /** concrete game controller class with both players playing locally */
-class ConsoleGameController(val id: Int, val player1: ConsolePlayer, val player2: ConsolePlayer, val fieldSize: Int, val boatCount: Array[Int]) extends GameController {
+class ConsoleGameController(val id: String, val player1: ConsolePlayer, val player2: ConsolePlayer) extends GameController {
 
 	/** array of player */
 	val players: Array[Player] = Array(player1,player2)
