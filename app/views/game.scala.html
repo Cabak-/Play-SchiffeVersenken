@@ -4,12 +4,13 @@
         @message
         <a href="@routes.Application.endGame" >Spiel beenden!!</a>
 
-        @game.gameState.fieldState1.visualCells(0)(0)
+
+        @game.gameState.fieldState1.uncoverCell(0,9,1)
         <table>
-            @for(lines <- game.gameState.fieldState1.visualCells) {
+            @for(y <- 0 to 9) {
                 <tr>
-                    @for(cell <- lines) {
-                        <td>@cell</td>
+                    @for(x <- 0 to 9) {
+                        <td>@game.gameState.fieldState1.visualCells(x)(y)</td>
                     }
                 </tr>
             }
