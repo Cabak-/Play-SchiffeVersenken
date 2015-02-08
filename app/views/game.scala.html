@@ -1,19 +1,15 @@
 @import play.api.Play.current
 
-
-
 @(message: String, game: GameController)(implicit session: play.api.mvc.Session)
 
 @if(session.get("id").getOrElse(null) == game.players(0).playerID){
     @if(!game.gameState.isPlayersTurn(game.players(0))){
         <meta http-equiv="refresh" content="0; URL=@routes.Application.waiting">
-        @game.players(0).asInstanceOf[RemotePlayer].view.lastMessage
     }
 }else {
     @if(session.get("id").getOrElse(null) == game.players(1).playerID) {
         @if(!game.gameState.isPlayersTurn(game.players(1))){
             <meta http-equiv="refresh" content="0; URL=@routes.Application.waiting">
-            @game.players(1).asInstanceOf[RemotePlayer].view.lastMessage
         }
     }
 }

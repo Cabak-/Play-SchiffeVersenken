@@ -66,53 +66,44 @@ object Application extends Controller {
 
   /** action to shoot at a cell */
   def shoot = Action { implicit request =>
-    var success : Boolean = true
+    var result : String = ""
     shootActionForm.bindFromRequest.fold(
       formWithErrors => {
-        success = false
+        result = "Bei der weitergabe der Daten ist ein Fehler aufgetreten!"
         // binding failure, you retrieve the form containing errors:
-        BadRequest(views.html.game("Fehlerhafte Eingabe",arrayOfGames(0)))
       },
       actionData => {
-        println("SHOT:\n" + actionData.player + "\n" + actionData.x + " / " + actionData.y + "\n--------------")
+        //println("SHOT:\n" + actionData.player + "\n" + actionData.x + " / " + actionData.y + "\n--------------")
         val player = { if (actionData.player == arrayOfGames(0).players(1).playerID) arrayOfGames(0).players(1) else arrayOfGames(0).players(0) }
-        success = arrayOfGames(0).proceedShot(player,actionData.x,actionData.y)
+        arrayOfGames(0).proceedShot(player,actionData.x,actionData.y)
+        result = player.asInstanceOf[RemotePlayer].view.lastMessage
+
       }
     )
-    if (!success) {
-      Ok(views.html.game("Du kannst dort jetzt nicht hinschiessen!",arrayOfGames(0)))
-    }else{
-      Ok(views.html.game("Schuss abgefeuert! Warte auf den Schuss des anderen Spielers!",arrayOfGames(0)))
-    }
+      Ok(views.html.game(result,arrayOfGames(0)))
   }
 
   /** action to place a boat */
   def placeBoat = Action { implicit request =>
-    var success : Boolean = true
-    var player : Player = null
-    println(boatPlacementActionForm.bindFromRequest)
+    var result : String = ""
     boatPlacementActionForm.bindFromRequest.fold(
       formWithErrors => {
-        success = false
+        result = "Bei der weitergabe der Daten ist ein Fehler aufgetreten!"
        // binding failure, you retrieve the form containing errors:
-        Unauthorized(views.html.game("Fehlerhafte Eingabe",arrayOfGames(0)))
       },
       actionData => {
-        println("BOAT PLACEMENT:\n" + actionData.player + "\n" + actionData.x + " / " + actionData.y + " - " + actionData.length + " - " + actionData.orientation + "\n--------------")
-        player = { if (actionData.player == arrayOfGames(0).players(1).playerID) arrayOfGames(0).players(1) else arrayOfGames(0).players(0) }
-        val horizontal = if(actionData.orientation == "v") false else true;
-        success = arrayOfGames(0).placeBoat(player,actionData.x,actionData.y,actionData.length,horizontal)
+        //println("BOAT PLACEMENT:\n" + actionData.player + "\n" + actionData.x + " / " + actionData.y + " - " + actionData.length + " - " + actionData.orientation + "\n--------------")
+        val player = { if (actionData.player == arrayOfGames(0).players(1).playerID) arrayOfGames(0).players(1) else arrayOfGames(0).players(0) }
+        val horizontal = if(actionData.orientation == "v") false else true
+        arrayOfGames(0).placeBoat(player, actionData.x, actionData.y, actionData.length, horizontal)
+        if(arrayOfGames(0).gameState.isPlayersTurn(player)) {
+          result = player.asInstanceOf[RemotePlayer].view.lastMessage
+        }else{
+          result = player.asInstanceOf[RemotePlayer].view.lastMessage+" Warte nun auf den Anderen Spieler!"
+        }
       }
     )
-    if (!success) {
-      Ok(views.html.game("Du kannst dort jetzt nicht das Boot plazieren!!",arrayOfGames(0)))
-    }else{
-      if(arrayOfGames(0).gameState.isPlayersTurn(player)) {
-        Ok(views.html.game("Boot platziert!", arrayOfGames(0)))
-      }else{
-        Ok(views.html.game("Boot platziert! Warte nun auf den Anderen Spieler!", arrayOfGames(0)))
-      }
-    }
+      Ok(views.html.game(result, arrayOfGames(0)))
   }
 
   /** show the main game view */
@@ -122,9 +113,9 @@ object Application extends Controller {
     if (arrayOfGames(0) == null) {
       val newGameController: ConcreteGameController = new ConcreteGameController(createID(), arrayOfPlayers(0), arrayOfPlayers(1))
       arrayOfGames(0) = newGameController
-      Ok(views.html.game("Das Spiel kann beginnen!! Du Bist am Zug! Bitte Platziere deine Bote!", arrayOfGames(0)))
+      Ok(views.html.game("Das Spiel kann beginnen!! Du Bist am Zug! Bitte Platziere deine Boote!", arrayOfGames(0)))
     }else if(userID == arrayOfGames(0).players(0).playerID || userID == arrayOfGames(0).players(1).playerID){
-      Ok(views.html.game("Das Spiel kann beginnen!! Warte bis "+arrayOfGames(0).players(0).playerName+" seine Boote Platziert hat!", arrayOfGames(0)))
+      Ok(views.html.game("Das Spiel kann beginnen!! Warte bis "+arrayOfGames(0).players(0).playerName+" seine Boote platziert hat!", arrayOfGames(0)))
     }else{
       Ok(views.html.index("Leider sind alle game Instanzen bereits vergeben! Versuchen sie es später bitte noch einmal!"))
     }
