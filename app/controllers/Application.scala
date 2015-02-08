@@ -25,17 +25,16 @@ object Application extends Controller {
         for (i <- 0 to arrayOfPlayers.length - 1) {
           if (arrayOfPlayers(i) == null) {
             arrayOfPlayers(i) = player
+            Cache.set("player"+i, player)
             break
           }
         }
       }
-    Cache.set("name", player.playerName)
-    Cache.set("id", player.playerID)
-    Ok(views.html.waiting())
+    Ok(views.html.waiting()).withSession( "id" -> player.playerID)
   }
 
   def game = Action { implicit request =>
-    val userID : String = Cache.getAs[String]("id").getOrElse(null)
+    val player : RemotePlayer = Cache.getAs[RemotePlayer]("player1").getOrElse(null)
     if (arrayOfGames(0) == null) {
       val newGameController: ConcreteGameController = new ConcreteGameController(createID(), arrayOfPlayers(0), arrayOfPlayers(1))
       arrayOfGames(0) = newGameController
@@ -43,17 +42,12 @@ object Application extends Controller {
         + "Spieler 1 : " + arrayOfGames(0).players(0).playerName
         + " Spieler 2 : " + arrayOfGames(0).players(1).playerName
         + " Game ID: " + arrayOfGames(0).id, arrayOfGames(0)))
-    }else if(userID == arrayOfGames(0).players(0).playerID || userID == arrayOfGames(0).players(1).playerID){
+    }else if(player.playerID == arrayOfGames(0).players(0).playerID || player.playerID == arrayOfGames(0).players(1).playerID){
       Ok(views.html.game("Das Spiel kann beginnen!! \n "
         + "Spieler 1 : " + arrayOfGames(0).players(0).playerName
         + " Spieler 2 : " + arrayOfGames(0).players(1).playerName
         + " Game ID: " + arrayOfGames(0).id, arrayOfGames(0)))
     }else{
-      println(userID)
-      println(arrayOfGames(0).players(0).playerID)
-      arrayOfPlayers(0) = null
-      arrayOfPlayers(1) = null
-      arrayOfGames(0) = null
       Ok(views.html.index("Leider sind alle game Instanzen bereits vergeben! Versuchen sie es später bitte noch einmal!"))
     }
   }
