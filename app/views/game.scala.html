@@ -7,11 +7,13 @@
 @if(session.get("id").getOrElse(null) == game.players(0).playerID){
     @if(!game.gameState.isPlayersTurn(game.players(0))){
         <meta http-equiv="refresh" content="0; URL=@routes.Application.waiting">
+        @game.players(0).asInstanceOf[RemotePlayer].view.lastMessage
     }
 }else {
     @if(session.get("id").getOrElse(null) == game.players(1).playerID) {
         @if(!game.gameState.isPlayersTurn(game.players(1))){
             <meta http-equiv="refresh" content="0; URL=@routes.Application.waiting">
+            @game.players(1).asInstanceOf[RemotePlayer].view.lastMessage
         }
     }
 }
@@ -127,7 +129,7 @@
                         }
                         if (first < 0 || first >= fieldSize || last < 0 || last >= fieldSize) return
                         for ( var i=first ; i <= last; i ++ ) {
-                        document.getElementById("own_cell_"+i+"_"+y).style.backgroundColor = "#0F0";
+                            document.getElementById("own_cell_"+i+"_"+y).style.backgroundColor = "#0F0";
                         }
                     }
                 }
@@ -168,6 +170,7 @@
     @{ val ownFieldState = { if(session.get("name") == game.players(0).playerName) game.gameState.fieldState1 else game.gameState.fieldState2 }}
     @{ val opponentFieldState = { if(session.get("name") == game.players(0).playerName) game.gameState.fieldState2 else game.gameState.fieldState1 }}
     *@
+
 
     <!-- Unterscheidung zwischen Spieler 1 und 2 -->
     <div id="monitor_container">

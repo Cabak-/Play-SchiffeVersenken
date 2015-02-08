@@ -36,7 +36,7 @@ trait Player {
 class RemotePlayer(val playerID: String, val playerName: String) extends Player {
 
   /** uses a browser view */
-  val view: View = new BrowserView(this)
+  val view: BrowserView = new BrowserView(this)
 
   /** demands the player to place a boat and returns the new created boat */
   def requestPlacement(id: Int, l: Int): Boat = {

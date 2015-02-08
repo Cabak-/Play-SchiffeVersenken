@@ -6,42 +6,52 @@ trait View {
 
   def player: Player
 
+  /** returns a string message for a message type */
+  def getStringMessage(msg: PlayerMessages): String = {
+    msg match {
+      case BOAT_PLACED => "Das Boot wurde platziert."
+      case WATER => "Wasser."
+      case HIT => "Treffer!"
+      case SUNK => "Versenkt!"
+      case YOU_WIN => "Alle Boote wurden versenkt! " + player.playerName + " gewinnt!"
+      case YOU_LOSE => "Alle deine Boote wurden versenkt! Du hast das Spiel leider verloren."
+    }
+  }
+
   /** outputs a message for the player - may be overridden! */
   def outputMessage(msg: PlayerMessages): Unit = {
-    msg match {
-      case BOAT_PLACED => println("Das Boot wurde platziert.")
-      case WATER => println("Wasser.")
-      case HIT => println("Treffer!")
-      case SUNK => println("Versenkt!")
-      case YOU_WIN => println("Alle Boote wurden versenkt! " + player.playerName + " gewinnt!")
-      case YOU_LOSE => println("Alle deine Boote wurden versenkt! Du hast das Spiel leider verloren.")
+    println(getStringMessage(msg))
+  }
+
+  /** returns a string message for an exception */
+  def getStringMessageFromException(e: Exception): String = {
+    e match {
+      // InvalidPlacementException
+      case e: BoatOverhangException =>
+        "Das Boot ist nicht vollstaendig im Spielfeld enthalten."
+      case e: BoatOverlapException =>
+        "Ein anderes Boot liegt zu nahe an der ausgewaehlten Position."
+      case e: InvalidPlacementException =>
+        "Das Boot wurde nicht korrekt platziert!"
+      // InvalidActionException
+      case e: NotPlayersTurnException =>
+        "Du bist nicht an der Reihe!"
+      case e: PlacementFinishedException =>
+        "Es wurden bereits alle Boot platziert!"
+      case e: PlacementNotFinishedException =>
+        "Es wurden noch nicht alle Boote platziert!"
+      case e: ShotNotInFieldException =>
+        "Die eingegebenen Koordinaten sind ungueltig!"
+      case e: ShotOnUncoveredCellException =>
+        "Du hast auf diese Position bereits geschossen!"
+      case e: InvalidActionException =>
+        "Eine ungueltige Aktion wurde ausgefuehrt!"
     }
   }
 
   /** informs the player about an exception - may be overridden! */
   def outputException(e: Exception): Unit = {
-    e match {
-      // InvalidPlacementException
-      case e: BoatOverhangException =>
-        println("Das Boot ist nicht vollstaendig im Spielfeld enthalten.")
-      case e: BoatOverlapException =>
-        println("Ein anderes Boot liegt zu nahe an der ausgewaehlten Position.");
-      case e: InvalidPlacementException =>
-        println("Das Boot wurde nicht korrekt platziert!")
-      // InvalidActionException
-      case e: NotPlayersTurnException =>
-        println("Du bist nicht an der Reihe!")
-      case e: PlacementFinishedException =>
-        println("Es wurden bereits alle Boot platziert!")
-      case e: PlacementNotFinishedException =>
-        println("Es wurden noch nicht alle Boote platziert!")
-      case e: ShotNotInFieldException =>
-        println("Die eingegebenen Koordinaten sind ungueltig!")
-      case e: ShotOnUncoveredCellException =>
-        println("Du hast auf diese Position bereits geschossen!");
-      case e: InvalidActionException =>
-        println("Eine ungueltige Aktion wurde ausgefuehrt!")
-    }
+    println(getStringMessageFromException(e))
   }
 
 }
@@ -90,5 +100,23 @@ class ConsoleView(val player: ConsolePlayer) extends View {
 
 /** a browser-based view */
 class BrowserView(val player: RemotePlayer) extends View {
+
+  /** saves the last message that the player received */
+  var lastMessage: String = null
+
+  /** outputs a message for the player */
+  override def outputMessage(msg: PlayerMessages): Unit = {
+    lastMessage = getStringMessage(msg)
+  }
+
+  /** outputs an exception for the player */
+  override def outputException(e: Exception): Unit = {
+    lastMessage = getStringMessageFromException(e)
+  }
+
+  /** resets the message for the player */
+  def resetMessage: Unit = {
+    lastMessage = null
+  }
 
 }
