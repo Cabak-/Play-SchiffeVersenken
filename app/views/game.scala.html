@@ -184,11 +184,11 @@
                 @for(y <- 0 until game.fieldSize) {
                     <tr>
                     @for(x <- 0 until game.fieldSize) {
-                        <td>
+                        <td id="own_cell_@{x}_@y" class="own_cell" onclick="placeBoat(@x,@y)" onmouseenter="placementMouseEvent(this,@x,@y)">
                         @if(game.gameState.fieldState1.visualCells(x)(y) == 0){
                             @game.gameState.fieldState1.gameArea.cells(x)(y)
                         }else{
-                            @game.gameState.fieldState2.visualCells(x)(y)
+                            @game.gameState.fieldState1.visualCells(x)(y)
                         }
                         </td>
                     }
@@ -217,10 +217,10 @@
                         <tr>
                         @for(x <- 0 until game.fieldSize) {
                             <td id="own_cell_@{x}_@y" class="own_cell" onclick="placeBoat(@x,@y)" onmouseenter="placementMouseEvent(this,@x,@y)">
-                            @if(game.gameState.fieldState1.visualCells(x)(y) == 0){
+                            @if(game.gameState.fieldState2.visualCells(x)(y) == 0){
                                 @game.gameState.fieldState2.gameArea.cells(x)(y)
                             }else{
-                                @game.gameState.fieldState1.visualCells(x)(y)
+                                @game.gameState.fieldState2.visualCells(x)(y)
                             }
                             </td>
                         }
