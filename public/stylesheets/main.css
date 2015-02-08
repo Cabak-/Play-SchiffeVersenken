@@ -55,6 +55,8 @@ table.game_area td {
     border: 1px solid black;
     width: 30px;
     height: 30px;
+    min-width: 30px;
+    min-height: 30px;
     padding: 0px;
 }
 

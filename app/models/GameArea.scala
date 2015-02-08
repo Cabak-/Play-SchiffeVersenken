@@ -6,7 +6,7 @@ class GameArea(val totalBoatCount: Int) {
 	val size: Int = 10
 
 	/* array of all boat objects that have been placed in the GameArea */
-	lazy val boatObjects = new Array[Boat](totalBoatCount)
+	val boatObjects = new Array[Boat](totalBoatCount)
 
 	/* array with information about the cells (integer values are 0 for water or the id of a boat) */
 	val cells = Array.ofDim[Int](size,size)

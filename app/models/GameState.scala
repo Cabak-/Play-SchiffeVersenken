@@ -25,6 +25,12 @@ class GameState(fieldSize: Int, player1: Player, player2: Player, boatCount: Arr
     fieldState2.reset
   }
 
+  /** resets the boat life (needs to be done at the beginning of the game) */
+  def resetBoatLife: Unit = {
+    fieldState1.resetLife
+    fieldState2.resetLife
+  }
+
   /** returns the opponent of a given player */
   def getOpponent(player: Player): Player = {
     if (playerTurn == player1) return player2
@@ -47,6 +53,19 @@ class GameState(fieldSize: Int, player1: Player, player2: Player, boatCount: Arr
     else return totalBoatsCount - boatsToPlace(placementPlayer) + 1
   }
 
+  /** returns the length of the next boat to be placed (by the player who has the turn) */
+  def getNextBoatLength: Int = {
+    val nextID: Int = getNextBoatID(playerTurn)
+    def calculateLength(iterator:Int,next:Int,l:Int): Int = {
+      if (iterator + boatCount(l) >= next) {
+        return l
+      } else {
+        return calculateLength(iterator+boatCount(l),next,l+1)
+      }
+    }
+    return calculateLength(0,nextID,1)
+  }
+
   /** checks if it is a player's turn */
   def isPlayersTurn(player: Player): Boolean = (playerTurn == player)
 
@@ -65,7 +84,12 @@ class GameState(fieldSize: Int, player1: Player, player2: Player, boatCount: Arr
     boatsToPlace = boatsToPlace + (player -> (boatsToPlace(player) - 1))
 
     // checks if it is the next player's turn
-    if (boatsToPlace(player) == 0) switchTurn
+    if (boatsToPlace(player) == 0) {
+      // reset the boat life for the player who has finished placing his boats
+      fieldStateMap(player).resetLife
+      // switch the turn
+      switchTurn
+    }
   }
 
   /** registers a shot by a player at a cell */
@@ -81,8 +105,11 @@ class GameState(fieldSize: Int, player1: Player, player2: Player, boatCount: Arr
       throw new ShotNotInFieldException
     }
 
+    // switch the turn
+    switchTurn
+
     // shoot and return the result (0: water, 1: hit, 2: hit + boat sunk)
-    return fieldStateMap(getOpponent(player)).registerShot(x,y)
+    return fieldStateMap(opponent).registerShot(x,y)
   }
 
 }

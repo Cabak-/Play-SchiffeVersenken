@@ -9,7 +9,7 @@ class BasicFieldState(val areaSize: Int, val boatCount: Array[Int], val totalBoa
 	/* numbers of boats that have not been sunk yet */
 	val boatsLeft: Array[Int] = new Array[Int](6)
 
-	/** resets the game state */
+	/** resets the field state */
 	def reset: Unit = {
 		// resets the cells
 		for (x <- 0 until areaSize) {
@@ -37,7 +37,7 @@ class BasicFieldState(val areaSize: Int, val boatCount: Array[Int], val totalBoa
 
 	/** checks if all boats have been sunk */
 	def isFinished: Boolean = {
-		for (i <- 0 until boatsLeft.size) {
+		for (i <- 1 until boatsLeft.size) {
 			if (boatsLeft(i) > 0) return false
 		}
 		return true
@@ -74,13 +74,11 @@ class FieldState(areaSize: Int, boatCount: Array[Int], totalBoatCount: Int, val 
 	/** create the game area */
 	//val gameArea: GameArea = new GameArea(totalBoatCount)
 
-	/** keeps track of the life of each boat (the key is the boat id) */
+	/** keeps track of the life of each boat (the key is the boat id - 1) */
 	val boatLife = new Array[Int](totalBoatCount)
 
-	/** override the reset function: also reset the boat life */
-	override def reset(): Unit = {
-		super.reset
-		// resets the boat life
+	/** reset the boat life */
+	def resetLife(): Unit = {
 		for (i <- 0 until boatLife.size) {
 			boatLife(i) = gameArea.boatObjects(i).length
 		}
