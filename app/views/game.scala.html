@@ -153,82 +153,89 @@
         <p>Session-ID: @session.get("id")</p>
         <p>Player-ID 1: @game.players(0).playerID</p>
         <p>Player-ID 2: @game.players(1).playerID</p>
-@{
-        if(session.get("id").getOrElse(null) == game.players(0).playerID){
+
+        @if(session.get("id").getOrElse(null) == game.players(0).playerID){
             <p>Du bist Spieler 1!</p>
-        }else if(session.get("id").getOrElse(null) == game.players(1).playerID) {
-            <p>Du bist Spieler 2!</p>
-        }else{
-            <p>Du nimmst nicht an diesem Spiel teil!</p>
-        }
-}
-
-        @{
-            game.gameState.fieldState1.uncoverCell(0, 9, 1)
-            game.gameState.fieldState2.uncoverCell(9, 0, 1)
-
-            //val player : RemotePlayer = Cache.getAs[RemotePlayer]("player1").getOrElse(null)
-
-
-            if(session.get("id") == game.players(0).playerID){
-                <p>Du bist Spieler 1!</p>
-            }else if(session.get("id") == game.players(1).playerID){
-                <p>Du bist Spieler 2!</p>
-            }else{
-                <p>Fehler!! Du bist weder Spieler 1 noch Spieler 2</p>
-            }
-
-
-            if (game.gameState.isPlacementFinished) {
-                if (game.gameState.isPlayersTurn(game.players(0))) {
-                    <p>Bitte schiesse auf ein Feld:</p>
-                } else {
-                    <p>Warte auf Schuss des Gegners...</p>
-                }
+        }else {
+            @if(session.get("id").getOrElse(null) == game.players(1).playerID) {
+                < p > Du bist Spieler 2 ! < / p >
             } else {
-                if (game.gameState.isPlayersTurn(game.players(0))) {
-                    <p>Bitte platziere ein Boot:</p>
-                } else {
-                    <p>Warte darauf, dass der Gegner ein Boot platziert...</p>
-                }
+                < p > Du nimmst nicht an diesem Spiel teil ! < / p >
             }
         }
 
-        @*
-        @ownFieldState() = @{ if(session.get("name") == game.players(0).playerName) game.gameState.fieldState1 else game.gameState.fieldState2 }
-        @opponentFieldState() = @{ if(session.get("name") == game.players(0).playerName) game.gameState.fieldState2 else game.gameState.fieldState1 }
 
-        @*
-        @{ val ownFieldState = { if(session.get("name") == game.players(0).playerName) game.gameState.fieldState1 else game.gameState.fieldState2 }}
-        @{ val opponentFieldState = { if(session.get("name") == game.players(0).playerName) game.gameState.fieldState2 else game.gameState.fieldState1 }}
-        *@
+    @{
+        game.gameState.fieldState1.uncoverCell(0, 9, 1)
+        game.gameState.fieldState2.uncoverCell(9, 0, 1)
 
-        <div id="monitor_container">
-            <div id="monitor_own">
-                <span>Eigenes Feld:</span>
-                <table id="own_game_area" class="game_area"  onmouseout="resetHighlights()">
-                    @for(y <- 0 until game.fieldSize) {
-                        <tr>
-                            @for(x <- 0 until game.fieldSize) {
-                                <td id="own_cell_@{x}_@y" class="own_cell" onclick="placeBoat(@x,@y)" onmouseenter="placementMouseEvent(this,@x,@y)">@game.gameState.fieldState1.visualCells(x)(y)</td>
-                            }
-                        </tr>
-                    }
-                </table>
-            </div>
+        //val player : RemotePlayer = Cache.getAs[RemotePlayer]("player1").getOrElse(null)
 
-            <div id="monitor_opponent">
-                <span>Feld des Gegners:</span>
-                <table id="opponent_game_area" class="game_area">
+        if (game.gameState.isPlacementFinished) {
+            if (game.gameState.isPlayersTurn(game.players(0))) {
+                <p>Bitte schiesse auf ein Feld:</p>
+            } else {
+                <p>Warte auf Schuss des Gegners...</p>
+            }
+        } else {
+            if (game.gameState.isPlayersTurn(game.players(0))) {
+                <p>Bitte platziere ein Boot:</p>
+            } else {
+                <p>Warte darauf, dass der Gegner ein Boot platziert...</p>
+            }
+        }
+    }
+
+    @*
+    @ownFieldState() = @{ if(session.get("name") == game.players(0).playerName) game.gameState.fieldState1 else game.gameState.fieldState2 }
+    @opponentFieldState() = @{ if(session.get("name") == game.players(0).playerName) game.gameState.fieldState2 else game.gameState.fieldState1 }
+    *@
+
+    @*
+    @{ val ownFieldState = { if(session.get("name") == game.players(0).playerName) game.gameState.fieldState1 else game.gameState.fieldState2 }}
+    @{ val opponentFieldState = { if(session.get("name") == game.players(0).playerName) game.gameState.fieldState2 else game.gameState.fieldState1 }}
+    *@
+
+    <!-- Unterscheidung zwischen Spieler 1 und 2 -->
+    <div id="monitor_container">
+        <div id="monitor_own">
+            <span>Eigenes Feld:</span>
+            <table id="own_game_area" class="game_area"  onmouseout="resetHighlights()">
+            @if(session.get("id").getOrElse(null) == game.players(0).playerID){
                 @for(y <- 0 until game.fieldSize) {
                     <tr>
-                        @for(x <- 0 until game.fieldSize) {
-                            <td id="opponent_cell_@{x}_@y"  onclick="shoot(@x,@y)">@game.gameState.fieldState2.visualCells(x)(y)</td>
-                        }
+                    @for(x <- 0 until game.fieldSize) {
+                        <td id="own_cell_@{x}_@y" class="own_cell" onclick="placeBoat(@x,@y)" onmouseenter="placementMouseEvent(this,@x,@y)">@game.gameState.fieldState1.visualCells(x)(y)</td>
+                    }
                     </tr>
                 }
-                </table>
-            </div>
+            }else {
+                @if(session.get("id").getOrElse(null) == game.players(1).playerID) {
+                    @for(y <- 0 until game.fieldSize) {
+                        <tr>
+                        @for(x <- 0 until game.fieldSize) {
+                            <td id="own_cell_@{x}_@y" class="own_cell" onclick="placeBoat(@x,@y)" onmouseenter="placementMouseEvent(this,@x,@y)">@game.gameState.fieldState2.visualCells(x)(y)</td>
+                        }
+                        </tr>
+                    }
+                }
+            }
+            </table>
         </div>
+
+
+        <div id="monitor_opponent">
+            <span>Feld des Gegners:</span>
+            <table id="opponent_game_area" class="game_area">
+            @for(y <- 0 until game.fieldSize) {
+                <tr>
+                    @for(x <- 0 until game.fieldSize) {
+                        <td id="opponent_cell_@{x}_@y"  onclick="shoot(@x,@y)">@game.gameState.fieldState2.visualCells(x)(y)</td>
+                    }
+                </tr>
+            }
+            </table>
+        </div>
+    </div>
 
 }
