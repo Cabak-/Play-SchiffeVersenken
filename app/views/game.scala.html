@@ -1,7 +1,7 @@
 @import play.api.Play.current
 
-@(message: String, game: GameController)
-    @main("Playing against other Player") {
+@(message: String, game: GameController)(implicit session: play.api.mvc.Session)
+@main("Playing against other Player") {
 
         @message
         <a href="@routes.Application.endGame" >Spiel beenden!!</a>
@@ -116,7 +116,8 @@
 
         </script>
 
-        <p>Session-ID: @play.api.cache.Cache.get("id")</p>
+        <p>Session-ID: @session.get("id")</p>
+
         <p>Name: "@play.api.cache.Cache.get("name")"</p>
         <p>Spieler 1: "@game.players(0).playerName"</p>
         <p>Spieler 2: "@game.players(1).playerName"</p>
