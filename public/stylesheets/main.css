@@ -62,11 +62,21 @@ table#opponent_game_area td:hover {
     background-color: #00F;
 }
 
-div#monitor_own {
-    float: left;
+div#monitor_container {
     margin-left: 20px;
 }
 
+div#monitor_container span {
+    font-size: 1.3em;
+    font-weight: bold;
+    margin:10px;
+}
+
+div#monitor_own {
+    float: left;
+    margin-right: 40px;
+}
+
 div#monitor_opponent {
-    margin-left: 20px;
+
 }

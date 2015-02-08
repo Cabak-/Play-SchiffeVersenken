@@ -80,6 +80,7 @@
                             first = boatStart[1] - boatLength + 1;
                             last = boatStart[1];
                         }
+                        if (first < 0 || first >= fieldSize || last < 0 || last >= fieldSize) return
                         for ( var i=first ; i <= last; i ++ ) {
                             document.getElementById("own_cell_"+x+"_"+i).style.backgroundColor = "#0F0";
                         }
@@ -90,6 +91,7 @@
                             first = boatStart[0] - boatLength + 1;
                             last = boatStart[0];
                         }
+                        if (first < 0 || first >= fieldSize || last < 0 || last >= fieldSize) return
                         for ( var i=first ; i <= last; i ++ ) {
                         document.getElementById("own_cell_"+i+"_"+y).style.backgroundColor = "#0F0";
                         }
@@ -116,18 +118,23 @@
 
         </script>
 
-        <p>Session-ID: @session.get("id")</p>
-
         <p>Name: "@play.api.cache.Cache.get("name")"</p>
         <p>Spieler 1: "@game.players(0).playerName"</p>
         <p>Spieler 2: "@game.players(1).playerName"</p>
 
 
+        <p>Session-ID: @session.get("id")</p>
+        <p>Player-ID 1: @game.players(0).playerID</p>
+        <p>Player-ID 2: @game.players(1).playerID</p>
 
-        @if("test" == "test") {
-            <p>test ist gleich test</p>
-        } else {
-            <p>test ist NICHT gleich test!!</p>
+        @if(session.get("id").toString == game.players(0).playerID.toString){
+            <p>Du bist Spieler 1!</p>
+        }else{
+            @if(session.get("id").toString == game.players(1).playerID.toString) {
+                <p>Du bist Spieler 2!</p>
+            }else{
+                <p>Du nimmst nicht an diesem Spiel teil!</p>
+            }
         }
 
         @{
@@ -137,11 +144,11 @@
             //val player : RemotePlayer = Cache.getAs[RemotePlayer]("player1").getOrElse(null)
 
 
-            if(session.get("id") == game.players(0).playerID) {
+            if(session.get("id") == game.players(0).playerID){
                 <p>Du bist Spieler 1!</p>
-            } else if(session.get("id") == game.players(1).playerID) {
+            }else if(session.get("id") == game.players(1).playerID){
                 <p>Du bist Spieler 2!</p>
-            } else {
+            }else{
                 <p>Fehler!! Du bist weder Spieler 1 noch Spieler 2</p>
             }
 
@@ -170,30 +177,32 @@
         @{ val opponentFieldState = { if(session.get("name") == game.players(0).playerName) game.gameState.fieldState2 else game.gameState.fieldState1 }}
         *@
 
-        <div id="monitor_own">
-            <h2>Eigenes Feld:</h2>
-            <table id="own_game_area" class="game_area"  onmouseout="resetHighlights()">
+        <div id="monitor_container">
+            <div id="monitor_own">
+                <span>Eigenes Feld:</span>
+                <table id="own_game_area" class="game_area"  onmouseout="resetHighlights()">
+                    @for(y <- 0 until game.fieldSize) {
+                        <tr>
+                            @for(x <- 0 until game.fieldSize) {
+                                <td id="own_cell_@{x}_@y" class="own_cell" onclick="placeBoat(@x,@y)" onmouseenter="placementMouseEvent(this,@x,@y)">@game.gameState.fieldState1.visualCells(x)(y)</td>
+                            }
+                        </tr>
+                    }
+                </table>
+            </div>
+
+            <div id="monitor_opponent">
+                <span>Feld des Gegners:</span>
+                <table id="opponent_game_area" class="game_area">
                 @for(y <- 0 until game.fieldSize) {
                     <tr>
                         @for(x <- 0 until game.fieldSize) {
-                            <td id="own_cell_@{x}_@y" class="own_cell" onclick="placeBoat(@x,@y)" onmouseenter="placementMouseEvent(this,@x,@y)">@game.gameState.fieldState1.visualCells(x)(y)</td>
+                            <td id="opponent_cell_@{x}_@y"  onclick="shoot(@x,@y)">@game.gameState.fieldState2.visualCells(x)(y)</td>
                         }
                     </tr>
                 }
-            </table>
-        </div>
-
-        <div id="monitor_opponent">
-            <h2>Feld des Gegners:</h2>
-            <table id="opponent_game_area" class="game_area">
-            @for(y <- 0 until game.fieldSize) {
-                <tr>
-                    @for(x <- 0 until game.fieldSize) {
-                        <td id="opponent_cell_@{x}_@y"  onclick="shoot(@x,@y)">@game.gameState.fieldState2.visualCells(x)(y)</td>
-                    }
-                </tr>
-            }
-            </table>
+                </table>
+            </div>
         </div>
 
 }
