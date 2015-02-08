@@ -1,6 +1,21 @@
 @import play.api.Play.current
 
+
+
 @(message: String, game: GameController)(implicit session: play.api.mvc.Session)
+
+@if(session.get("id").getOrElse(null) == game.players(0).playerID){
+    @if(!game.gameState.isPlayersTurn(game.players(0))){
+        <meta http-equiv="refresh" content="0; URL=@routes.Application.waiting">
+    }
+}else {
+    @if(session.get("id").getOrElse(null) == game.players(1).playerID) {
+        @if(!game.gameState.isPlayersTurn(game.players(1))){
+            <meta http-equiv="refresh" content="0; URL=@routes.Application.waiting">
+        }
+    }
+}
+
 @main("Playing against other Player") {
 
         @message
@@ -60,7 +75,7 @@
             function placeBoat(x,y) {
                 var player = '@session.get("id").getOrElse(null)';
                 if (boatStart == null) {
-                    boatStart = new Array(x,y)
+                    boatStart = new Array(x,y);
                     //alert('Start at ' + x + ',' + y ) ;
                 } else {
                     if (x == boatStart[0] && y == boatStart[1] ) { // same coordinates: remove the first point
@@ -70,21 +85,21 @@
                         if (y > boatStart[1]) {
                             if (boatStart[1] + boatLength - 1 >= fieldSize) return;
                             //alert ( 'Placed boat: ' + boatStart[0] + ',' + boatStart[1] + ' - v' )
-                            submitData('@routes.Application.placeBoat',{'player': player, 'x': boatStart[0], 'y': boatStart[1],  boatLength, 'orientation': 'v'})
+                            submitData('@routes.Application.placeBoat',{'player': player, 'x': boatStart[0], 'y': boatStart[1],  'boatLength' : boatLength, 'orientation': 'v'});
                         } else {
                             if (boatStart[1] - boatLength - 1 < 0) return;
                             //alert ( 'Placed boat: ' + x + ',' + (boatStart[1] - boatLength + 1) + ' - v' )
-                            submitData('@routes.Application.placeBoat',{'player': player, 'x': boatStart[0], 'y': boatStart[1],  boatLength, 'orientation': 'v'})
+                            submitData('@routes.Application.placeBoat',{'player': player, 'x': boatStart[0], 'y': boatStart[1], 'boatLength' : boatLength, 'orientation': 'v'});
                         }
                     } else if ( y == boatStart[ 1 ] && Math.abs(x - boatStart[0]) < boatLength) { // horizontal placement
                         if (x > boatStart[0]) {
                             if (boatStart[0] + boatLength - 1 >= fieldSize) return;
                             //alert ( 'Placed boat: ' + boatStart[0] + ',' + boatStart[ 1 ] + ' - h' )
-                            submitData('@routes.Application.placeBoat',{'player': player, 'x': boatStart[0], 'y': boatStart[1],  boatLength, 'orientation': 'h'})
+                            submitData('@routes.Application.placeBoat',{'player': player, 'x': boatStart[0], 'y': boatStart[1], 'boatLength' : boatLength, 'orientation': 'h'});
                         } else {
                             if (boatStart[0] - boatLength - 1 < 0) return;
                             //alert ( 'Placed boat: ' + (boatStart[0] - boatLength + 1) + ',' + y + ' - h' )
-                            submitData('@routes.Application.placeBoat',{'player': player, 'x': boatStart[0], 'y': boatStart[1], boatLength, 'orientation': 'h'})
+                            submitData('@routes.Application.placeBoat',{'player': player, 'x': boatStart[0], 'y': boatStart[1], 'boatLength' : boatLength, 'orientation': 'h'});
                         }
                     }
                 }
@@ -145,45 +160,9 @@
 
         </script>
 
-        <p>Name: "@play.api.cache.Cache.get("name")"</p>
-        <p>Spieler 1: "@game.players(0).playerName"</p>
-        <p>Spieler 2: "@game.players(1).playerName"</p>
-
-
-        <p>Session-ID: @session.get("id")</p>
-        <p>Player-ID 1: @game.players(0).playerID</p>
-        <p>Player-ID 2: @game.players(1).playerID</p>
-
-        @if(session.get("id").getOrElse(null) == game.players(0).playerID){
-            <p>Du bist Spieler 1!</p>
-        }else {
-            @if(session.get("id").getOrElse(null) == game.players(1).playerID) {
-                <p> Du bist Spieler 2 ! </p >
-            } else {
-                <p> Du nimmst nicht an diesem Spiel teil ! </p >
-            }
-        }
-
 
     @{
-        game.gameState.fieldState1.uncoverCell(0, 9, 1)
-        game.gameState.fieldState2.uncoverCell(9, 0, 1)
-
         //val player : RemotePlayer = Cache.getAs[RemotePlayer]("player1").getOrElse(null)
-
-        if (game.gameState.isPlacementFinished) {
-            if (game.gameState.isPlayersTurn(game.players(0))) {
-                <p>Bitte schiesse auf ein Feld:</p>
-            } else {
-                <p>Warte auf Schuss des Gegners...</p>
-            }
-        } else {
-            if (game.gameState.isPlayersTurn(game.players(0))) {
-                <p>Bitte platziere ein Boot:</p>
-            } else {
-                <p>Warte darauf, dass der Gegner ein Boot platziert...</p>
-            }
-        }
     }
 
     @*
@@ -205,7 +184,13 @@
                 @for(y <- 0 until game.fieldSize) {
                     <tr>
                     @for(x <- 0 until game.fieldSize) {
-                        <td id="own_cell_@{x}_@y" class="own_cell" onclick="placeBoat(@x,@y)" onmouseenter="placementMouseEvent(this,@x,@y)">@game.gameState.fieldState1.visualCells(x)(y)</td>
+                        <td>
+                        @if(game.gameState.fieldState1.visualCells(x)(y) == 0){
+                            @game.gameState.fieldState1.gameArea.cells(x)(y)
+                        }else{
+                            @game.gameState.fieldState2.visualCells(x)(y)
+                        }
+                        </td>
                     }
                     </tr>
                 }
@@ -231,7 +216,13 @@
                     @for(y <- 0 until game.fieldSize) {
                         <tr>
                         @for(x <- 0 until game.fieldSize) {
-                            <td id="own_cell_@{x}_@y" class="own_cell" onclick="placeBoat(@x,@y)" onmouseenter="placementMouseEvent(this,@x,@y)">@game.gameState.fieldState2.visualCells(x)(y)</td>
+                            <td id="own_cell_@{x}_@y" class="own_cell" onclick="placeBoat(@x,@y)" onmouseenter="placementMouseEvent(this,@x,@y)">
+                            @if(game.gameState.fieldState1.visualCells(x)(y) == 0){
+                                @game.gameState.fieldState2.gameArea.cells(x)(y)
+                            }else{
+                                @game.gameState.fieldState1.visualCells(x)(y)
+                            }
+                            </td>
                         }
                         </tr>
                     }

@@ -11,7 +11,7 @@ trait GameController {
 	def fieldSize: Int = 10
 
 	/** amount of boats of the length 0 to 5 */
-	def boatCount: Array[Int] = Array(0,0,4,3,2,1)
+	def boatCount: Array[Int] = Array(0,0,2,0,0,0)
 
 	/** the total amount of boats for each player */
 	def totalBoatCount: Int

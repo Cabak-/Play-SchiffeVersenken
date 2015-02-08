@@ -30,12 +30,12 @@ object Application extends Controller {
         for (i <- 0 to arrayOfPlayers.length - 1) {
           if (arrayOfPlayers(i) == null) {
             arrayOfPlayers(i) = player
-            Cache.set("player"+player.playerID, player)
+            //Cache.set("player"+player.playerID, player)
             break
           }
         }
       }
-    Ok(views.html.waiting()).withSession( "id" -> player.playerID)
+    Ok(views.html.searching()).withSession( "id" -> player.playerID)
   }
 
   /** defines the shoot action */
@@ -59,48 +59,60 @@ object Application extends Controller {
       "player" -> text,
       "x" -> number,
       "y" -> number,
-      "length" -> number,
+      "boatLength" -> number,
       "orientation" -> text
     )(BoatPlacementAction.apply)(BoatPlacementAction.unapply)
   )
 
   /** action to shoot at a cell */
   def shoot = Action { implicit request =>
+    var success : Boolean = true
     shootActionForm.bindFromRequest.fold(
       formWithErrors => {
+        success = false
         // binding failure, you retrieve the form containing errors:
         BadRequest(views.html.game("Fehlerhafte Eingabe",arrayOfGames(0)))
       },
       actionData => {
         println("SHOT:\n" + actionData.player + "\n" + actionData.x + " / " + actionData.y + "\n--------------")
-
         val player = { if (actionData.player == arrayOfGames(0).players(1).playerID) arrayOfGames(0).players(1) else arrayOfGames(0).players(0) }
-        val success: Boolean = arrayOfGames(0).proceedShot(player,actionData.x,actionData.y)
-        if (!success) Ok(views.html.game("Du kannst dort jetzt nicht hinschiessen!",arrayOfGames(0)))
+        success = arrayOfGames(0).proceedShot(player,actionData.x,actionData.y)
       }
     )
-
-    Ok(views.html.game("Schuss abgefeuert!",arrayOfGames(0)))
+    if (!success) {
+      Ok(views.html.game("Du kannst dort jetzt nicht hinschiessen!",arrayOfGames(0)))
+    }else{
+      Ok(views.html.game("Schuss abgefeuert! Warte auf den Schuss des anderen Spielers!",arrayOfGames(0)))
+    }
   }
 
   /** action to place a boat */
   def placeBoat = Action { implicit request =>
+    var success : Boolean = true
+    var player : Player = null
+    println(boatPlacementActionForm.bindFromRequest)
     boatPlacementActionForm.bindFromRequest.fold(
       formWithErrors => {
-        // binding failure, you retrieve the form containing errors:
-        BadRequest(views.html.game("Fehlerhafte Eingabe",arrayOfGames(0)))
+        success = false
+       // binding failure, you retrieve the form containing errors:
+        Unauthorized(views.html.game("Fehlerhafte Eingabe",arrayOfGames(0)))
       },
       actionData => {
         println("BOAT PLACEMENT:\n" + actionData.player + "\n" + actionData.x + " / " + actionData.y + " - " + actionData.length + " - " + actionData.orientation + "\n--------------")
-
-        val player = { if (actionData.player == arrayOfGames(0).players(1).playerID) arrayOfGames(0).players(1) else arrayOfGames(0).players(0) }
+        player = { if (actionData.player == arrayOfGames(0).players(1).playerID) arrayOfGames(0).players(1) else arrayOfGames(0).players(0) }
         val horizontal = if(actionData.orientation == "v") false else true;
-        val success: Boolean = arrayOfGames(0).placeBoat(player,actionData.x,actionData.y,actionData.length,horizontal)
-        if (!success) Ok(views.html.game("Du kannst dort jetzt kein Boot platzieren!",arrayOfGames(0)))
+        success = arrayOfGames(0).placeBoat(player,actionData.x,actionData.y,actionData.length,horizontal)
       }
     )
-
-    Ok(views.html.game("Boot platziert!",arrayOfGames(0)))
+    if (!success) {
+      Ok(views.html.game("Du kannst dort jetzt nicht das Boot plazieren!!",arrayOfGames(0)))
+    }else{
+      if(arrayOfGames(0).gameState.isPlayersTurn(player)) {
+        Ok(views.html.game("Boot platziert!", arrayOfGames(0)))
+      }else{
+        Ok(views.html.game("Boot platziert! Warte nun auf den Anderen Spieler!", arrayOfGames(0)))
+      }
+    }
   }
 
   /** show the main game view */
@@ -110,22 +122,16 @@ object Application extends Controller {
     if (arrayOfGames(0) == null) {
       val newGameController: ConcreteGameController = new ConcreteGameController(createID(), arrayOfPlayers(0), arrayOfPlayers(1))
       arrayOfGames(0) = newGameController
-      Ok(views.html.game("Das Spiel kann beginnen!! \n "
-        + "Spieler 1 : " + arrayOfGames(0).players(0).playerName
-        + " Spieler 2 : " + arrayOfGames(0).players(1).playerName
-        + " Game ID: " + arrayOfGames(0).id, arrayOfGames(0)))
+      Ok(views.html.game("Das Spiel kann beginnen!! Du Bist am Zug! Bitte Platziere deine Bote!", arrayOfGames(0)))
     }else if(userID == arrayOfGames(0).players(0).playerID || userID == arrayOfGames(0).players(1).playerID){
-      Ok(views.html.game("Das Spiel kann beginnen!! \n "
-        + "Spieler 1 : " + arrayOfGames(0).players(0).playerName
-        + " Spieler 2 : " + arrayOfGames(0).players(1).playerName
-        + " Game ID: " + arrayOfGames(0).id, arrayOfGames(0)))
+      Ok(views.html.game("Das Spiel kann beginnen!! Warte bis "+arrayOfGames(0).players(0).playerName+" seine Boote Platziert hat!", arrayOfGames(0)))
     }else{
       Ok(views.html.index("Leider sind alle game Instanzen bereits vergeben! Versuchen sie es später bitte noch einmal!"))
     }
   }
 
-  /** wait for another player to join */
-  def waiting = Action { implicit request =>
+  /** searching for another player to join */
+  def searching = Action { implicit request =>
     var redirect : Boolean = false
     breakable{
       for( i <- 0 until 10){
@@ -139,10 +145,38 @@ object Application extends Controller {
     if(redirect){
       Redirect(routes.Application.game())
     }else{
-    for(i <- 0 to arrayOfPlayers.length-1){
-      arrayOfPlayers(i) = null
+      for(i <- 0 to arrayOfPlayers.length-1){
+        arrayOfPlayers(i) = null
+      }
+      Ok(views.html.index("Leider hat sich kein Spieler Gefunden! BItte versuchen sie es später noch einmal!"))
     }
-    Ok(views.html.index("Leider hat sich kein Spieler Gefunden! BItte versuchen sie es später noch einmal!"))
+  }
+
+  /** Waiting for PlayerMove */
+  def waiting = Action { implicit request =>
+    val userID: String = request.session.get("id").getOrElse(null)
+    var redirect : Boolean = false
+    breakable{
+    for(i <- 0 to arrayOfPlayers.length-1){
+      if(userID == arrayOfPlayers(i).playerID) {
+          for( j <- 0 to 1000){
+            Thread.sleep(1000)
+            if(arrayOfGames(0) == null){
+              break
+            }else{
+              if (arrayOfGames(0).gameState.isPlayersTurn(arrayOfPlayers(i))) {
+                redirect = true
+                break
+              }
+            }
+          }
+        }
+      }
+    }
+    if(redirect){
+      Ok(views.html.game("Du bist an der Reihe!!",arrayOfGames(0)))
+    }else{
+      Ok(views.html.index("Leider hat der andere Spieler aufgegeben!"))
     }
   }
 

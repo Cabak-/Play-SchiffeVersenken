@@ -6,10 +6,10 @@
 GET         /                    controllers.Application.index
 
 # authentifizierung page
-POST        /           controllers.Application.authenticate
+POST        /                    controllers.Application.authenticate
 
 # SearchingFor2ndPlayer page
-GET        /searching                   controllers.Application.waiting
+GET         /searching           controllers.Application.searching
 
 # Game page
 GET         /game                controllers.Application.game
@@ -18,10 +18,13 @@ GET         /game                controllers.Application.game
 POST        /placeBoat           controllers.Application.placeBoat
 
 # Shoot
-POST        /shoot              controllers.Application.shoot
+POST        /shoot               controllers.Application.shoot
 
 # EndGame page
-GET         /end                    controllers.Application.endGame
+GET         /end                 controllers.Application.endGame
+
+# Wait for PlayerMoves page
+GET        /wait                     controllers.Application.waiting
 
 # Map static resources from the /public folder to the /assets URL path
 GET         /assets/*file        controllers.Assets.at(path="/public", file)
