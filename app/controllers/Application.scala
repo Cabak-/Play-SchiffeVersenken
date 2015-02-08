@@ -64,7 +64,7 @@ object Application extends Controller {
       }
     }
     if(redirect){
-      Redirect(routes.Application.game()).withCookies()
+      Redirect(routes.Application.game())
     }else{
     for(i <- 0 until arrayOfPlayers.length-1){
       arrayOfPlayers(i) = null
