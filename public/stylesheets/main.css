@@ -82,3 +82,15 @@ div#monitor_own {
 div#monitor_opponent {
 
 }
+#status{
+    color: green;
+    font-size: 1.3em;
+    font-weight: bold;
+    margin: 10px;
+}
+#status_locked{
+    color: red;
+    font-size: 1.3em;
+    font-weight: bold;
+    margin: 10px;
+}

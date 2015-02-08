@@ -69,7 +69,7 @@ object Application extends Controller {
     var result : String = ""
     shootActionForm.bindFromRequest.fold(
       formWithErrors => {
-        result = "Bei der weitergabe der Daten ist ein Fehler aufgetreten!"
+        result = "Bei der Weitergabe der Daten ist ein Fehler aufgetreten!"
         // binding failure, you retrieve the form containing errors:
       },
       actionData => {
@@ -88,7 +88,7 @@ object Application extends Controller {
     var result : String = ""
     boatPlacementActionForm.bindFromRequest.fold(
       formWithErrors => {
-        result = "Bei der weitergabe der Daten ist ein Fehler aufgetreten!"
+        result = "Bei der Weitergabe der Daten ist ein Fehler aufgetreten!"
        // binding failure, you retrieve the form containing errors:
       },
       actionData => {
@@ -99,7 +99,7 @@ object Application extends Controller {
         if(arrayOfGames(0).gameState.isPlayersTurn(player)) {
           result = player.asInstanceOf[RemotePlayer].view.lastMessage
         }else{
-          result = player.asInstanceOf[RemotePlayer].view.lastMessage+" Warte nun auf den Anderen Spieler!"
+          result = player.asInstanceOf[RemotePlayer].view.lastMessage+" Warte bitte auf den anderen Spieler!"
         }
       }
     )

@@ -2,22 +2,33 @@
 
 @(message: String, game: GameController)(implicit session: play.api.mvc.Session)
 
-@if(session.get("id").getOrElse(null) == game.players(0).playerID){
-    @if(!game.gameState.isPlayersTurn(game.players(0))){
-        <meta http-equiv="refresh" content="0; URL=@routes.Application.waiting">
-    }
-}else {
-    @if(session.get("id").getOrElse(null) == game.players(1).playerID) {
-        @if(!game.gameState.isPlayersTurn(game.players(1))){
-            <meta http-equiv="refresh" content="0; URL=@routes.Application.waiting">
-        }
-    }
-}
-
 @main("Playing against other Player") {
 
-        @message
-        <a href="@routes.Application.endGame" >Spiel beenden!!</a>
+    @if(session.get("id").getOrElse(null) == game.players(0).playerID){
+        @if(game.gameState.isPlayersTurn(game.players(0))){
+            <div id="status" >
+            @message
+            </div>
+        }else{
+            <meta http-equiv="refresh" content="0; URL=@routes.Application.waiting">
+            <div id="status_locked" >
+            @message
+            </div>
+        }
+    }else {
+        @if(session.get("id").getOrElse(null) == game.players(1).playerID) {
+            @if(game.gameState.isPlayersTurn(game.players(1))){
+                <div id="status" >
+                @message
+                </div>
+            }else{
+                <meta http-equiv="refresh" content="0; URL=@routes.Application.waiting">
+                <div id="status_locked" >
+                @message
+                </div>
+            }
+        }
+    }
 
 
         <script language="javascript">
@@ -273,4 +284,15 @@
         }
     </div>
 
+    @if(session.get("id").getOrElse(null) == game.players(0).playerID){
+        @if(game.gameState.isPlayersTurn(game.players(0))){
+            <a href="@routes.Application.endGame" >Spiel aufgeben!!</a>
+        }
+    }else {
+        @if(session.get("id").getOrElse(null) == game.players(1).playerID) {
+            @if(game.gameState.isPlayersTurn(game.players(1))){
+                <a href="@routes.Application.endGame" >Spiel aufgeben!!</a>
+            }
+        }
+    }
 }
