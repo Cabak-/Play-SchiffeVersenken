@@ -51,7 +51,7 @@ object Application extends Controller {
   )
 
   /** defines the boat placement action */
-  case class BoatPlacementAction(player: String, x: Int, y: Int, orientation: String)
+  case class BoatPlacementAction(player: String, x: Int, y: Int, length: Int, orientation: String)
 
   /** form for the boat placement action */
   val boatPlacementActionForm = Form(
@@ -59,6 +59,7 @@ object Application extends Controller {
       "player" -> text,
       "x" -> number,
       "y" -> number,
+      "length" -> number,
       "orientation" -> text
     )(BoatPlacementAction.apply)(BoatPlacementAction.unapply)
   )
@@ -71,11 +72,11 @@ object Application extends Controller {
         BadRequest(views.html.game("Fehlerhafte Eingabe",arrayOfGames(0)))
       },
       actionData => {
-        // binding success
         println("SHOT:\n" + actionData.player + "\n" + actionData.x + " / " + actionData.y + "\n--------------")
-        /*val newUser = models.User(userData.name, userData.age)
-        val id = models.User.create(newUser)
-        Redirect(routes.Application.home(id))*/
+
+        val player = { if (actionData.player == arrayOfGames(0).players(1).playerID) arrayOfGames(0).players(1) else arrayOfGames(0).players(0) }
+        val success: Boolean = arrayOfGames(0).proceedShot(player,actionData.x,actionData.y)
+        if (!success) Ok(views.html.game("Du kannst dort jetzt nicht hinschiessen!",arrayOfGames(0)))
       }
     )
 
@@ -90,12 +91,12 @@ object Application extends Controller {
         BadRequest(views.html.game("Fehlerhafte Eingabe",arrayOfGames(0)))
       },
       actionData => {
-        // binding success
-        println("BOAT PLACEMENT:\n" + actionData.player + "\n" + actionData.x + " / " + actionData.y + " - " + actionData.orientation + "\n--------------")
+        println("BOAT PLACEMENT:\n" + actionData.player + "\n" + actionData.x + " / " + actionData.y + " - " + actionData.length + " - " + actionData.orientation + "\n--------------")
 
-        /*val newUser = models.User(userData.name, userData.age)
-        val id = models.User.create(newUser)
-        Redirect(routes.Application.home(id))*/
+        val player = { if (actionData.player == arrayOfGames(0).players(1).playerID) arrayOfGames(0).players(1) else arrayOfGames(0).players(0) }
+        val horizontal = if(actionData.orientation == "v") false else true;
+        val success: Boolean = arrayOfGames(0).placeBoat(player,actionData.x,actionData.y,actionData.length,horizontal)
+        if (!success) Ok(views.html.game("Du kannst dort jetzt kein Boot platzieren!",arrayOfGames(0)))
       }
     )
 

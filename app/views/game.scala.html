@@ -9,7 +9,7 @@
 
         <script language="javascript">
             var fieldSize = 10; // size of the field
-            var boatLength = 4; // length of the boat
+            var boatLength = 2; // length of the boat
             var boatStart = null; // first selected coordinate of the boat
 
             /** function to submit data via POST */
@@ -61,30 +61,30 @@
                 var player = '@session.get("id").getOrElse(null)';
                 if (boatStart == null) {
                     boatStart = new Array(x,y)
-                    alert('Start at ' + x + ',' + y ) ;
+                    //alert('Start at ' + x + ',' + y ) ;
                 } else {
                     if (x == boatStart[0] && y == boatStart[1] ) { // same coordinates: remove the first point
                         boatStart = null ;
-                        alert ( 'Removed the start of the boat' )
+                        //alert ( 'Removed the start of the boat' )
                     } else if ( x == boatStart[0] && Math.abs(y - boatStart[1]) < boatLength) { // vertical placement
                         if (y > boatStart[1]) {
                             if (boatStart[1] + boatLength - 1 >= fieldSize) return;
                             //alert ( 'Placed boat: ' + boatStart[0] + ',' + boatStart[1] + ' - v' )
-                            submitData('@routes.Application.placeBoat',{'player': player, 'x': boatStart[0], 'y': boatStart[1], 'orientation': 'v'})
+                            submitData('@routes.Application.placeBoat',{'player': player, 'x': boatStart[0], 'y': boatStart[1],  boatLength, 'orientation': 'v'})
                         } else {
                             if (boatStart[1] - boatLength - 1 < 0) return;
                             //alert ( 'Placed boat: ' + x + ',' + (boatStart[1] - boatLength + 1) + ' - v' )
-                            submitData('@routes.Application.placeBoat',{'player': player, 'x': boatStart[0], 'y': boatStart[1], 'orientation': 'v'})
+                            submitData('@routes.Application.placeBoat',{'player': player, 'x': boatStart[0], 'y': boatStart[1],  boatLength, 'orientation': 'v'})
                         }
                     } else if ( y == boatStart[ 1 ] && Math.abs(x - boatStart[0]) < boatLength) { // horizontal placement
                         if (x > boatStart[0]) {
                             if (boatStart[0] + boatLength - 1 >= fieldSize) return;
                             //alert ( 'Placed boat: ' + boatStart[0] + ',' + boatStart[ 1 ] + ' - h' )
-                            submitData('@routes.Application.placeBoat',{'player': player, 'x': boatStart[0], 'y': boatStart[1], 'orientation': 'h'})
+                            submitData('@routes.Application.placeBoat',{'player': player, 'x': boatStart[0], 'y': boatStart[1],  boatLength, 'orientation': 'h'})
                         } else {
                             if (boatStart[0] - boatLength - 1 < 0) return;
                             //alert ( 'Placed boat: ' + (boatStart[0] - boatLength + 1) + ',' + y + ' - h' )
-                            submitData('@routes.Application.placeBoat',{'player': player, 'x': boatStart[0], 'y': boatStart[1], 'orientation': 'h'})
+                            submitData('@routes.Application.placeBoat',{'player': player, 'x': boatStart[0], 'y': boatStart[1], boatLength, 'orientation': 'h'})
                         }
                     }
                 }
@@ -158,9 +158,9 @@
             <p>Du bist Spieler 1!</p>
         }else {
             @if(session.get("id").getOrElse(null) == game.players(1).playerID) {
-                < p > Du bist Spieler 2 ! < / p >
+                <p> Du bist Spieler 2 ! </p >
             } else {
-                < p > Du nimmst nicht an diesem Spiel teil ! < / p >
+                <p> Du nimmst nicht an diesem Spiel teil ! </p >
             }
         }
 
