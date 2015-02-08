@@ -6,14 +6,19 @@
 GET         /                    controllers.Application.index
 
 # authentifizierung page
-POST        /           controllers.Application.authenticate
+POST        /                    controllers.Application.authenticate
 
 # SearchingFor2ndPlayer page
-GET        /searching                   controllers.Application.waiting
+GET         /searching           controllers.Application.waiting
 
 # Game page
 GET         /game                controllers.Application.game
-POST         /game                controllers.Application.game
+
+# Place boat
+POST        /placeBoat           controllers.Application.placeBoat
+
+# Shoot
+POST        /shoot              controllers.Application.shoot
 
 # EndGame page
 GET         /                    controllers.Application.endGame

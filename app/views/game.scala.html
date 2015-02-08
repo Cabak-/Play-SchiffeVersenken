@@ -70,21 +70,21 @@
                         if (y > boatStart[1]) {
                             if (boatStart[1] + boatLength - 1 >= fieldSize) return;
                             //alert ( 'Placed boat: ' + boatStart[0] + ',' + boatStart[1] + ' - v' )
-                            submitData('@routes.Application.game',{'action': 'place_boat', 'player': player, 'x': boatStart[0], 'y': boatStart[1], 'orientation': 'v'})
+                            submitData('@routes.Application.placeBoat',{'player': player, 'x': boatStart[0], 'y': boatStart[1], 'orientation': 'v'})
                         } else {
                             if (boatStart[1] - boatLength - 1 < 0) return;
                             //alert ( 'Placed boat: ' + x + ',' + (boatStart[1] - boatLength + 1) + ' - v' )
-                            submitData('@routes.Application.game',{'action': 'place_boat', 'player': player, 'x': boatStart[0], 'y': boatStart[1], 'orientation': 'v'})
+                            submitData('@routes.Application.placeBoat',{'player': player, 'x': boatStart[0], 'y': boatStart[1], 'orientation': 'v'})
                         }
                     } else if ( y == boatStart[ 1 ] && Math.abs(x - boatStart[0]) < boatLength) { // horizontal placement
                         if (x > boatStart[0]) {
                             if (boatStart[0] + boatLength - 1 >= fieldSize) return;
                             //alert ( 'Placed boat: ' + boatStart[0] + ',' + boatStart[ 1 ] + ' - h' )
-                            submitData('@routes.Application.game',{'action': 'place_boat', 'player': player, 'x': boatStart[0], 'y': boatStart[1], 'orientation': 'h'})
+                            submitData('@routes.Application.placeBoat',{'player': player, 'x': boatStart[0], 'y': boatStart[1], 'orientation': 'h'})
                         } else {
                             if (boatStart[0] - boatLength - 1 < 0) return;
                             //alert ( 'Placed boat: ' + (boatStart[0] - boatLength + 1) + ',' + y + ' - h' )
-                            submitData('@routes.Application.game',{'action': 'place_boat', 'player': player, 'x': boatStart[0], 'y': boatStart[1], 'orientation': 'h'})
+                            submitData('@routes.Application.placeBoat',{'player': player, 'x': boatStart[0], 'y': boatStart[1], 'orientation': 'h'})
                         }
                     }
                 }
@@ -140,7 +140,7 @@
             function shoot(x,y) {
                 var player = '@session.get("id").getOrElse(null)';
                 //alert('Shoot at '+x+','+y);
-                submitData('@routes.Application.game',{'action': 'shoot', 'player': player, 'x': x, 'y': y})
+                submitData('@routes.Application.shoot',{'player': player, 'x': x, 'y': y})
             }
 
         </script>
