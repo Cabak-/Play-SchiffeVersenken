@@ -66,7 +66,7 @@ object Application extends Controller {
     if(redirect){
       Redirect(routes.Application.game())
     }else{
-    for(i <- 0 until arrayOfPlayers.length-1){
+    for(i <- 0 to arrayOfPlayers.length-1){
       arrayOfPlayers(i) = null
     }
     Ok(views.html.index("Leider hat sich kein Spieler Gefunden! BItte versuchen sie es später noch einmal!"))
@@ -78,6 +78,12 @@ object Application extends Controller {
   }
 
   def endGame = Action {
+    for(i <- 0 to arrayOfPlayers.length-1){
+      arrayOfPlayers(i) = null
+    }
+    for(i <- 0 to arrayOfGames.length-1){
+      arrayOfGames(i) = null
+    }
     Redirect(routes.Application.index)
   }
 
