@@ -25,7 +25,7 @@ object Application extends Controller {
         for (i <- 0 to arrayOfPlayers.length - 1) {
           if (arrayOfPlayers(i) == null) {
             arrayOfPlayers(i) = player
-            Cache.set("player"+i, player)
+            Cache.set("player"+player.playerID, player)
             break
           }
         }
@@ -34,7 +34,7 @@ object Application extends Controller {
   }
 
   def game = Action { implicit request =>
-    val player : RemotePlayer = Cache.getAs[RemotePlayer]("player1").getOrElse(null)
+    val userID : String = request.session.get("id").getOrElse(null)
     if (arrayOfGames(0) == null) {
       val newGameController: ConcreteGameController = new ConcreteGameController(createID(), arrayOfPlayers(0), arrayOfPlayers(1))
       arrayOfGames(0) = newGameController
@@ -42,7 +42,7 @@ object Application extends Controller {
         + "Spieler 1 : " + arrayOfGames(0).players(0).playerName
         + " Spieler 2 : " + arrayOfGames(0).players(1).playerName
         + " Game ID: " + arrayOfGames(0).id, arrayOfGames(0)))
-    }else if(player.playerID == arrayOfGames(0).players(0).playerID || player.playerID == arrayOfGames(0).players(1).playerID){
+    }else if(userID == arrayOfGames(0).players(0).playerID || userID == arrayOfGames(0).players(1).playerID){
       Ok(views.html.game("Das Spiel kann beginnen!! \n "
         + "Spieler 1 : " + arrayOfGames(0).players(0).playerName
         + " Spieler 2 : " + arrayOfGames(0).players(1).playerName
