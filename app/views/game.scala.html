@@ -198,10 +198,10 @@
 
     <!-- Unterscheidung zwischen Spieler 1 und 2 -->
     <div id="monitor_container">
-        <div id="monitor_own">
-            <span>Eigenes Feld:</span>
-            <table id="own_game_area" class="game_area"  onmouseout="resetHighlights()">
-            @if(session.get("id").getOrElse(null) == game.players(0).playerID){
+        @if(session.get("id").getOrElse(null) == game.players(0).playerID){
+            <div id="monitor_own">
+                <span>Eigenes Feld:</span>
+                <table id="own_game_area" class="game_area"  onmouseout="resetHighlights()">
                 @for(y <- 0 until game.fieldSize) {
                     <tr>
                     @for(x <- 0 until game.fieldSize) {
@@ -209,7 +209,24 @@
                     }
                     </tr>
                 }
-            }else {
+                </table>
+            </div>
+            <div id="monitor_opponent">
+                <span>Feld des Gegners:</span>
+                <table id="opponent_game_area" class="game_area">
+                @for(y <- 0 until game.fieldSize) {
+                    <tr>
+                    @for(x <- 0 until game.fieldSize) {
+                        <td id="opponent_cell_@{x}_@y"  onclick="shoot(@x,@y)">@game.gameState.fieldState2.visualCells(x)(y)</td>
+                    }
+                    </tr>
+                }
+                </table>
+            </div>
+        }else {
+            <div id="monitor_own">
+                <span>Eigenes Feld:</span>
+                <table id="own_game_area" class="game_area"  onmouseout="resetHighlights()">
                 @if(session.get("id").getOrElse(null) == game.players(1).playerID) {
                     @for(y <- 0 until game.fieldSize) {
                         <tr>
@@ -219,23 +236,21 @@
                         </tr>
                     }
                 }
-            }
-            </table>
-        </div>
-
-
-        <div id="monitor_opponent">
-            <span>Feld des Gegners:</span>
-            <table id="opponent_game_area" class="game_area">
-            @for(y <- 0 until game.fieldSize) {
-                <tr>
+                </table>
+            </div>
+            <div id="monitor_opponent">
+                <span>Feld des Gegners:</span>
+                <table id="opponent_game_area" class="game_area">
+                @for(y <- 0 until game.fieldSize) {
+                    <tr>
                     @for(x <- 0 until game.fieldSize) {
-                        <td id="opponent_cell_@{x}_@y"  onclick="shoot(@x,@y)">@game.gameState.fieldState2.visualCells(x)(y)</td>
+                        <td id="opponent_cell_@{x}_@y"  onclick="shoot(@x,@y)">@game.gameState.fieldState1.visualCells(x)(y)</td>
                     }
-                </tr>
-            }
-            </table>
-        </div>
+                    </tr>
+                }
+                </table>
+            </div>
+        }
     </div>
 
 }
