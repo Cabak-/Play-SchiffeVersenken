@@ -12,6 +12,26 @@
             var boatLength = 4; // length of the boat
             var boatStart = null; // first selected coordinate of the boat
 
+            /** function to submit data via POST */
+            function submitData(path, params) {
+                var form = document.createElement("form");
+                form.setAttribute("method", "POST");
+                form.setAttribute("action", path);
+
+                for(var key in params) {
+                    if(params.hasOwnProperty(key)) {
+                        var hiddenField = document.createElement("input");
+                        hiddenField.setAttribute("type", "hidden");
+                        hiddenField.setAttribute("name", key);
+                        hiddenField.setAttribute("value", params[key]);
+                        form.appendChild(hiddenField);
+                    }
+                }
+
+                document.body.appendChild(form);
+                form.submit();
+            }
+
             /** getElementsByClassName function (not available for all browsers) */
             function getElementsByClassName(node,classname) {
                 if (node.getElementsByClassName) { // use native implementation if available
@@ -38,6 +58,7 @@
 
             /** function to place a boat by selecting two coordinates */
             function placeBoat(x,y) {
+                var player = '@session.get("id").getOrElse(null)';
                 if (boatStart == null) {
                     boatStart = new Array(x,y)
                     alert('Start at ' + x + ',' + y ) ;
@@ -48,18 +69,22 @@
                     } else if ( x == boatStart[0] && Math.abs(y - boatStart[1]) < boatLength) { // vertical placement
                         if (y > boatStart[1]) {
                             if (boatStart[1] + boatLength - 1 >= fieldSize) return;
-                            alert ( 'Placed boat: ' + boatStart[0] + ',' + boatStart[1] + ' - v' )
+                            //alert ( 'Placed boat: ' + boatStart[0] + ',' + boatStart[1] + ' - v' )
+                            submitData('@routes.Application.game',{'action': 'place_boat', 'player': player, 'x': boatStart[0], 'y': boatStart[1], 'orientation': 'v'})
                         } else {
                             if (boatStart[1] - boatLength - 1 < 0) return;
-                            alert ( 'Placed boat: ' + x + ',' + (boatStart[1] - boatLength + 1) + ' - v' )
+                            //alert ( 'Placed boat: ' + x + ',' + (boatStart[1] - boatLength + 1) + ' - v' )
+                            submitData('@routes.Application.game',{'action': 'place_boat', 'player': player, 'x': boatStart[0], 'y': boatStart[1], 'orientation': 'v'})
                         }
                     } else if ( y == boatStart[ 1 ] && Math.abs(x - boatStart[0]) < boatLength) { // horizontal placement
                         if (x > boatStart[0]) {
                             if (boatStart[0] + boatLength - 1 >= fieldSize) return;
-                            alert ( 'Placed boat: ' + boatStart[0] + ',' + boatStart[ 1 ] + ' - h' )
+                            //alert ( 'Placed boat: ' + boatStart[0] + ',' + boatStart[ 1 ] + ' - h' )
+                            submitData('@routes.Application.game',{'action': 'place_boat', 'player': player, 'x': boatStart[0], 'y': boatStart[1], 'orientation': 'h'})
                         } else {
                             if (boatStart[0] - boatLength - 1 < 0) return;
-                            alert ( 'Placed boat: ' + (boatStart[0] - boatLength + 1) + ',' + y + ' - h' )
+                            //alert ( 'Placed boat: ' + (boatStart[0] - boatLength + 1) + ',' + y + ' - h' )
+                            submitData('@routes.Application.game',{'action': 'place_boat', 'player': player, 'x': boatStart[0], 'y': boatStart[1], 'orientation': 'h'})
                         }
                     }
                 }
@@ -113,7 +138,9 @@
 
             /** function to shoot at a coordinate */
             function shoot(x,y) {
-                alert('Shoot at '+x+','+y);
+                var player = '@session.get("id").getOrElse(null)';
+                //alert('Shoot at '+x+','+y);
+                submitData('@routes.Application.game',{'action': 'shoot', 'player': player, 'x': x, 'y': y})
             }
 
         </script>

@@ -13,6 +13,7 @@ GET        /searching                   controllers.Application.waiting
 
 # Game page
 GET         /game                controllers.Application.game
+POST         /game                controllers.Application.game
 
 # EndGame page
 GET         /                    controllers.Application.endGame
