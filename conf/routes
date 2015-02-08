@@ -13,7 +13,12 @@ GET        /searching                   controllers.Application.waiting
 
 # Game page
 GET         /game                controllers.Application.game
-POST        /game                controllers.Application.game
+
+# Place boat
+POST        /placeBoat           controllers.Application.placeBoat
+
+# Shoot
+POST        /shoot              controllers.Application.shoot
 
 # EndGame page
 GET         /end                    controllers.Application.endGame
