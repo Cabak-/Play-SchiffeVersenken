@@ -35,10 +35,7 @@ object Application extends Controller {
   }
 
   def game = Action { implicit request =>
-
     val userID : String = Cache.getAs[String]("id").getOrElse(null)
-    println(userID)
-    println(arrayOfPlayers(1).playerID)
     if (arrayOfGames(0) == null) {
       val newGameController: ConcreteGameController = new ConcreteGameController(createID(), arrayOfPlayers(0), arrayOfPlayers(1))
       arrayOfGames(0) = newGameController
@@ -46,12 +43,14 @@ object Application extends Controller {
         + "Spieler 1 : " + arrayOfGames(0).players(0).playerName
         + " Spieler 2 : " + arrayOfGames(0).players(1).playerName
         + " Game ID: " + arrayOfGames(0).id, arrayOfGames(0)))
-    }else if (userID == (arrayOfGames(0).players(0).playerName) || userID == (arrayOfGames(0).players(1).playerName)){
+    }else if(userID == arrayOfGames(0).players(0).playerID || userID == arrayOfGames(0).players(1).playerID){
       Ok(views.html.game("Das Spiel kann beginnen!! \n "
         + "Spieler 1 : " + arrayOfGames(0).players(0).playerName
         + " Spieler 2 : " + arrayOfGames(0).players(1).playerName
         + " Game ID: " + arrayOfGames(0).id, arrayOfGames(0)))
     }else{
+      println(userID)
+      println(arrayOfGames(0).players(0).playerID)
       arrayOfPlayers(0) = null
       arrayOfPlayers(1) = null
       arrayOfGames(0) = null
