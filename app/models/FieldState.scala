@@ -38,6 +38,7 @@ class BasicFieldState(val areaSize: Int, val boatCount: Array[Int], val totalBoa
 	/** checks if all boats have been sunk */
 	def isFinished: Boolean = {
 		for (i <- 1 until boatsLeft.size) {
+      //println("BOATS OF LENGTH " + i + " LEFT: " + boatsLeft(i))
 			if (boatsLeft(i) > 0) return false
 		}
 		return true

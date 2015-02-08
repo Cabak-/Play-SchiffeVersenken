@@ -11,7 +11,7 @@ trait GameController {
 	def fieldSize: Int = 10
 
 	/** amount of boats of the length 0 to 5 */
-	def boatCount: Array[Int] = Array(0,0,2,1,0,0)
+	def boatCount: Array[Int] = Array(0,0,1,0,0,0)
 
 	/** the total amount of boats for each player */
 	def totalBoatCount: Int
@@ -61,6 +61,7 @@ trait GameController {
 				case 0 => player.passMessage(WATER)
 				case 1 => player.passMessage(HIT)
 				case 2 => player.passMessage(SUNK)
+        case 3 => player.passMessage(YOU_WIN); return false
 			}
 			return true
 		} catch {
@@ -166,14 +167,14 @@ class ConsoleGameController(val id: String, val player1: ConsolePlayer, val play
 
 				// check if the game is finished
 				if (opponentFieldState.isFinished) {
-					playerTurn.passMessage(YOU_WIN)
+					//playerTurn.passMessage(YOU_WIN) // now done automatically after a shot
 				} else {
 					// switch the turn and proceed
 					gameState.switchTurn
 					proceedGame
 				}
-			}	else { // shot was not successful
-				proceedGame
+			}	else { // shot was not successful (or game was finished)
+        if (!opponentFieldState.isFinished) proceedGame
 			}
 		};
 		proceedGame

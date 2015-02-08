@@ -111,8 +111,9 @@
             /** mouseover-function for the boat-placement field */
             function placementMouseEvent(element,x,y) {
                 resetHighlights();
+                //console.log(element);
                 if (boatStart == null) {
-                    element.style.backgroundColor = "#00F";
+                    element.style.backgroundColor = "#00F";//"blue";//"rgb(0,0,255)";//"#00F";
                 } else {
                     if (x == boatStart[ 0 ] && y == boatStart[ 1 ] ) { // same coordinates: remove the first point
                         element.style.backgroundColor = "#F00";
@@ -125,7 +126,8 @@
                         }
                         if (first < 0 || first >= fieldSize || last < 0 || last >= fieldSize) return
                         for ( var i=first ; i <= last; i ++ ) {
-                            document.getElementById("own_cell_"+x+"_"+i).style.backgroundColor = "#0F0";
+                            document.getElementById("own_cell_"+x+"_"+i).style.backgroundColor = "#0F0";//"green";//"rgb(0,255,0)";//"#0F0";
+                            //console.log(document.getElementById("own_cell_"+x+"_"+i));
                         }
                     } else if ( y == boatStart[ 1 ] && Math.abs(x - boatStart[0]) < boatLength) { // horizontal placement
                         var first = boatStart[0];
@@ -136,7 +138,8 @@
                         }
                         if (first < 0 || first >= fieldSize || last < 0 || last >= fieldSize) return
                         for ( var i=first ; i <= last; i ++ ) {
-                            document.getElementById("own_cell_"+i+"_"+y).style.backgroundColor = "#0F0";
+                            document.getElementById("own_cell_"+i+"_"+y).style.backgroundColor = "#0F0";//"green";//"rgb(0,255,0)";//"#0F0";
+                            //console.log(document.getElementById("own_cell_"+i+"_"+y));
                         }
                     }
                 }
@@ -183,7 +186,7 @@
     <div id="monitor_container">
         @if(session.get("id").getOrElse(null) == game.players(0).playerID){
             <div id="monitor_own">
-                <span>Eigenes Feld:</span>
+                <span>@game.players(0).playerName</span>
                 <table id="own_game_area" class="game_area"  onmouseout="resetHighlights()">
                 @for(y <- 0 until game.fieldSize) {
                     <tr>
@@ -209,7 +212,7 @@
                 </table>
             </div>
             <div id="monitor_opponent">
-                <span>Feld des Gegners:</span>
+                <span>@game.players(1).playerName</span>
                 <table id="opponent_game_area" class="game_area">
                 @for(y <- 0 until game.fieldSize) {
                     <tr>
@@ -232,7 +235,7 @@
             </div>
         }else {
             <div id="monitor_own">
-                <span>Eigenes Feld:</span>
+                <span>@game.players(1).playerName</span>
                 <table id="own_game_area" class="game_area"  onmouseout="resetHighlights()">
                 @if(session.get("id").getOrElse(null) == game.players(1).playerID) {
                     @for(y <- 0 until game.fieldSize) {
@@ -260,7 +263,7 @@
                 </table>
             </div>
             <div id="monitor_opponent">
-                <span>Feld des Gegners:</span>
+                <span>@game.players(0).playerName</span>
                 <table id="opponent_game_area" class="game_area">
                 @for(y <- 0 until game.fieldSize) {
                     <tr>

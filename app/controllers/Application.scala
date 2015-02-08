@@ -66,44 +66,62 @@ object Application extends Controller {
 
   /** action to shoot at a cell */
   def shoot = Action { implicit request =>
-    var result : String = ""
-    shootActionForm.bindFromRequest.fold(
-      formWithErrors => {
-        result = "Bei der Weitergabe der Daten ist ein Fehler aufgetreten!"
-        // binding failure, you retrieve the form containing errors:
-      },
-      actionData => {
-        //println("SHOT:\n" + actionData.player + "\n" + actionData.x + " / " + actionData.y + "\n--------------")
-        val player = { if (actionData.player == arrayOfGames(0).players(1).playerID) arrayOfGames(0).players(1) else arrayOfGames(0).players(0) }
-        arrayOfGames(0).proceedShot(player,actionData.x,actionData.y)
-        result = player.asInstanceOf[RemotePlayer].view.lastMessage
+    var result: String = ""
 
-      }
-    )
-      Ok(views.html.game(result,arrayOfGames(0)))
+    // allow no further actions when the game is already finished
+    if (arrayOfGames(0).gameState.fieldState1.isFinished || arrayOfGames(0).gameState.fieldState2.isFinished) {
+      result = "Das Spiel ist beendet."
+    } else {
+      shootActionForm.bindFromRequest.fold(
+        formWithErrors => {
+          result = "Bei der Weitergabe der Daten ist ein Fehler aufgetreten!"
+          // binding failure, you retrieve the form containing errors:
+        },
+        actionData => {
+          //println("SHOT:\n" + actionData.player + "\n" + actionData.x + " / " + actionData.y + "\n--------------")
+          val player = {
+            if (actionData.player == arrayOfGames(0).players(1).playerID) arrayOfGames(0).players(1) else arrayOfGames(0).players(0)
+          }
+          arrayOfGames(0).proceedShot(player, actionData.x, actionData.y)
+          result = player.asInstanceOf[RemotePlayer].view.lastMessage
+
+        }
+      )
+    }
+
+    Ok(views.html.game(result,arrayOfGames(0)))
   }
 
   /** action to place a boat */
   def placeBoat = Action { implicit request =>
-    var result : String = ""
-    boatPlacementActionForm.bindFromRequest.fold(
-      formWithErrors => {
-        result = "Bei der Weitergabe der Daten ist ein Fehler aufgetreten!"
-       // binding failure, you retrieve the form containing errors:
-      },
-      actionData => {
-        //println("BOAT PLACEMENT:\n" + actionData.player + "\n" + actionData.x + " / " + actionData.y + " - " + actionData.length + " - " + actionData.orientation + "\n--------------")
-        val player = { if (actionData.player == arrayOfGames(0).players(1).playerID) arrayOfGames(0).players(1) else arrayOfGames(0).players(0) }
-        val horizontal = if(actionData.orientation == "v") false else true
-        arrayOfGames(0).placeBoat(player, actionData.x, actionData.y, actionData.length, horizontal)
-        if(arrayOfGames(0).gameState.isPlayersTurn(player)) {
-          result = player.asInstanceOf[RemotePlayer].view.lastMessage
-        }else{
-          result = player.asInstanceOf[RemotePlayer].view.lastMessage+" Warte bitte auf den anderen Spieler!"
+    var result: String = ""
+
+    // allow no further actions when the game is already finished
+    if (arrayOfGames(0).gameState.fieldState1.isFinished || arrayOfGames(0).gameState.fieldState2.isFinished) {
+      result = "Das Spiel ist beendet."
+    } else {
+      boatPlacementActionForm.bindFromRequest.fold(
+        formWithErrors => {
+          result = "Bei der Weitergabe der Daten ist ein Fehler aufgetreten!"
+          // binding failure, you retrieve the form containing errors:
+        },
+        actionData => {
+          //println("BOAT PLACEMENT:\n" + actionData.player + "\n" + actionData.x + " / " + actionData.y + " - " + actionData.length + " - " + actionData.orientation + "\n--------------")
+          val player = {
+            if (actionData.player == arrayOfGames(0).players(1).playerID) arrayOfGames(0).players(1) else arrayOfGames(0).players(0)
+          }
+          val horizontal = if (actionData.orientation == "v") false else true
+          arrayOfGames(0).placeBoat(player, actionData.x, actionData.y, actionData.length, horizontal)
+          if (arrayOfGames(0).gameState.isPlayersTurn(player)) {
+            result = player.asInstanceOf[RemotePlayer].view.lastMessage
+          } else {
+            result = player.asInstanceOf[RemotePlayer].view.lastMessage + " Warte bitte auf den anderen Spieler!"
+          }
         }
-      }
-    )
-      Ok(views.html.game(result, arrayOfGames(0)))
+      )
+    }
+
+    Ok(views.html.game(result, arrayOfGames(0)))
   }
 
   /** show the main game view */
@@ -113,11 +131,11 @@ object Application extends Controller {
     if (arrayOfGames(0) == null) {
       val newGameController: ConcreteGameController = new ConcreteGameController(createID(), arrayOfPlayers(0), arrayOfPlayers(1))
       arrayOfGames(0) = newGameController
-      Ok(views.html.game("Das Spiel kann beginnen!! Du Bist am Zug! Bitte Platziere deine Boote!", arrayOfGames(0)))
+      Ok(views.html.game("Das Spiel kann beginnen!! Du Bist am Zug! Bitte platziere deine Boote!", arrayOfGames(0)))
     }else if(userID == arrayOfGames(0).players(0).playerID || userID == arrayOfGames(0).players(1).playerID){
       Ok(views.html.game("Das Spiel kann beginnen!! Warte bis "+arrayOfGames(0).players(0).playerName+" seine Boote platziert hat!", arrayOfGames(0)))
     }else{
-      Ok(views.html.index("Leider sind alle game Instanzen bereits vergeben! Versuchen sie es später bitte noch einmal!"))
+      Ok(views.html.index("Leider sind alle Game-Instanzen bereits vergeben! Versuchen Sie es später bitte noch einmal!"))
     }
   }
 
@@ -139,7 +157,7 @@ object Application extends Controller {
       for(i <- 0 to arrayOfPlayers.length-1){
         arrayOfPlayers(i) = null
       }
-      Ok(views.html.index("Leider hat sich kein Spieler Gefunden! BItte versuchen sie es später noch einmal!"))
+      Ok(views.html.index("Leider hat sich kein Spieler gefunden! Bitte versuchen Sie es später noch einmal!"))
     }
   }
 
@@ -164,8 +182,17 @@ object Application extends Controller {
         }
       }
     }
-    if(redirect){
-      Ok(views.html.game("Du bist an der Reihe!!",arrayOfGames(0)))
+    if(redirect) {
+      // has the other player won the game?
+      val player = {
+        if (request.session.get("id").getOrElse(null) == arrayOfGames(0).players(1).playerID) arrayOfGames(0).players(1) else arrayOfGames(0).players(0)
+      }
+      //val opponent = arrayOfGames(0).gameState.getOpponent(player)
+      if (arrayOfGames(0).gameState.fieldStateMap(player).isFinished) {
+        Ok(views.html.game("Du hast leider verloren!", arrayOfGames(0)))
+      } else {
+        Ok(views.html.game("Du bist an der Reihe!", arrayOfGames(0)))
+      }
     }else{
       Ok(views.html.index("Leider hat der andere Spieler aufgegeben!"))
     }
