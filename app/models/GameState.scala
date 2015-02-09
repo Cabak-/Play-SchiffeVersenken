@@ -1,4 +1,6 @@
 package models
+import PlayerMessages._
+
 /** model for the game state, including information about the current
   * phase of the game and non-static information about the fields */
 class GameState(fieldSize: Int, player1: Player, player2: Player, boatCount: Array[Int], totalBoatsCount: Int) {
@@ -105,11 +107,18 @@ class GameState(fieldSize: Int, player1: Player, player2: Player, boatCount: Arr
       throw new ShotNotInFieldException
     }
 
+    // shoot and return the result (0: water, 1: hit, 2: hit + boat sunk)
+    val shotResult: Int = fieldStateMap(opponent).registerShot(x,y)
+
     // switch the turn
     switchTurn
 
-    // shoot and return the result (0: water, 1: hit, 2: hit + boat sunk)
-    return fieldStateMap(opponent).registerShot(x,y)
+    // has the player won the game? -> 3
+    if (fieldStateMap(opponent).isFinished) {
+      return 3
+    }
+
+    return shotResult;
   }
 
 }
