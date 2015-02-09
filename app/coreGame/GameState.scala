@@ -13,10 +13,10 @@ class GameState(fieldSize: Int, player1: Player, player2: Player, boatCount: Arr
   var playerTurn: Player = player1
 
   /** field state for player 1 */
-  val fieldState1: FieldState = new FieldState(fieldSize,boatCount,totalBoatsCount,new GameArea(fieldSize,totalBoatsCount))
+  val fieldState1: FieldState = new FieldState(fieldSize,boatCount,totalBoatsCount,StaticGameAreaFactory.create(fieldSize,totalBoatsCount))
 
   /** field state for player 2 */
-  val fieldState2: FieldState = new FieldState(fieldSize,boatCount,totalBoatsCount,new GameArea(fieldSize,totalBoatsCount))
+  val fieldState2: FieldState = new FieldState(fieldSize,boatCount,totalBoatsCount,StaticGameAreaFactory.create(fieldSize,totalBoatsCount))
 
   /** map from players to their field states */
   val fieldStateMap: Map[Player,FieldState] = Map(player1 -> fieldState1, player2 -> fieldState2)
@@ -81,7 +81,7 @@ class GameState(fieldSize: Int, player1: Player, player2: Player, boatCount: Arr
 
     // try to place the boat, can produce InvalidPlacementExceptions
     val newBoat: Boat = new Boat(x,y,l,horizontal,getNextBoatID(player))
-    fieldStateMap(player).gameArea.placeBoat(newBoat)
+    fieldStateMap(player).gameArea = fieldStateMap(player).gameArea.placeBoat(newBoat)
 
     // boat was successfully placed (no exceptions caused)
     boatsToPlace = boatsToPlace + (player -> (boatsToPlace(player) - 1))

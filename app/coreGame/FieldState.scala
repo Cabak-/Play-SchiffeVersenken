@@ -71,7 +71,7 @@ class BasicFieldState(val areaSize: Int, val boatCount: Array[Int], val totalBoa
 /** extension of the field state class for states where the life
 	* of each boat is also known and the instance of the program is also
 	* able to tell when a boat was sunk */
-class FieldState(areaSize: Int, boatCount: Array[Int], totalBoatCount: Int, val gameArea: GameArea) extends BasicFieldState(areaSize,boatCount,totalBoatCount) {
+class FieldState(areaSize: Int, boatCount: Array[Int], totalBoatCount: Int, var gameArea: StaticGameArea) extends BasicFieldState(areaSize,boatCount,totalBoatCount) {
 
 	/** create the game area */
 	//val gameArea: GameArea = new GameArea(totalBoatCount)
@@ -81,6 +81,7 @@ class FieldState(areaSize: Int, boatCount: Array[Int], totalBoatCount: Int, val 
 
 	/** reset the boat life */
 	def resetLife(): Unit = {
+    println(gameArea.boatObjects.size) // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		for (i <- 0 until boatLife.size) {
 			boatLife(i) = gameArea.boatObjects(i).length
 		}

@@ -1,4 +1,4 @@
-package models
+package coreGame
 
 /** immutable class to manage the positioning of boats */
 class StaticGameArea(val fieldSize: Int, val totalBoatCount: Int, val boatObjects: IndexedSeq[Boat], val cells: IndexedSeq[Int]) {
