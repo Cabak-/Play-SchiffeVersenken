@@ -20,9 +20,15 @@ var boatStart = null;
             </div>
         }else{
             <meta http-equiv="refresh" content="0; URL=@routes.Application.waiting">
-            <div id="status_locked" >
-            @message
-            </div>
+            @if(message contains "gewinnt"){
+                <div id="status" style="font-size: 1.5em">
+                @message
+                </div>
+            }else{
+                <div id="status_locked" >
+                @message
+                </div>
+            }
         }
     }else {
         @if(session.get("id").getOrElse(null) == game.players(1).playerID) {
@@ -32,9 +38,15 @@ var boatStart = null;
                 </div>
             }else{
                 <meta http-equiv="refresh" content="0; URL=@routes.Application.waiting">
-                <div id="status_locked" >
-                @message
-                </div>
+                @if(message contains "gewinnt" ){
+                    <div id="status" style="font-size: 1.5em">
+                    @message
+                    </div>
+                }else{
+                    <div id="status_locked" >
+                    @message
+                    </div>
+                }
             }
         }
     }

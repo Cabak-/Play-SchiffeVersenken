@@ -142,8 +142,8 @@ object Application extends Controller {
   def searching = Action { implicit request =>
     var redirect : Boolean = false
     breakable{
-      for( i <- 0 to 10){
-        Thread.sleep(990)
+      for( i <- 0 to 30){
+        Thread.sleep(1000)
         if (arrayOfPlayers(1) != null) {
           redirect = true
           break
@@ -200,7 +200,7 @@ object Application extends Controller {
         }
       }
     }else{
-      Ok(views.html.index("Leider hat der gegnerische Spieler aufgegeben!"))
+      Ok(views.html.index("Der gegnerische Spieler hat das Spiel beendet!"))
     }
   }
 
