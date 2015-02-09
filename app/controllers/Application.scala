@@ -125,8 +125,8 @@ object Application extends Controller {
   def searching = Action { implicit request =>
     var redirect : Boolean = false
     breakable{
-      for( i <- 0 until 10){
-        Thread.sleep(1000)
+      for( i <- 0 to 10){
+        Thread.sleep(990)
         if (arrayOfPlayers(1) != null) {
           redirect = true
           break

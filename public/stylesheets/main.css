@@ -86,11 +86,13 @@ div#monitor_opponent {
     color: green;
     font-size: 1.3em;
     font-weight: bold;
-    margin: 10px;
 }
 #status_locked{
     color: red;
     font-size: 1.3em;
     font-weight: bold;
+}
+#forfeit{
+    position: inherit;
     margin: 10px;
 }
