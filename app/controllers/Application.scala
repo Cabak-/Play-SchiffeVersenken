@@ -186,14 +186,21 @@ object Application extends Controller {
       val player = {
         if (request.session.get("id").getOrElse(null) == arrayOfGames(0).players(1).playerID) arrayOfGames(0).players(1) else arrayOfGames(0).players(0)
       }
+      val opponent = {
+        if (request.session.get("id").getOrElse(null) != arrayOfGames(0).players(1).playerID) arrayOfGames(0).players(1) else arrayOfGames(0).players(0)
+      }
       //val opponent = arrayOfGames(0).gameState.getOpponent(player)
       if (arrayOfGames(0).gameState.fieldStateMap(player).isFinished) {
-        Ok(views.html.game("Du hast leider verloren!", arrayOfGames(0)))
+        Ok(views.html.game(opponent.playerName + "hat leider gewonnen! Versuche es doch noch einmal!", arrayOfGames(0)))
       } else {
-        Ok(views.html.game("Du bist an der Reihe!", arrayOfGames(0)))
+        if(arrayOfGames(0).gameState.isPlacementFinished) {
+          Ok(views.html.game("Du darfst auf das Gegnerische Feld schießen!", arrayOfGames(0)))
+        }else{
+          Ok(views.html.game("Du darfst Boote platzieren!", arrayOfGames(0)))
+        }
       }
     }else{
-      Ok(views.html.index("Leider hat der andere Spieler aufgegeben!"))
+      Ok(views.html.index("Leider hat der gegnerische Spieler aufgegeben!"))
     }
   }
 

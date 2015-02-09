@@ -42,7 +42,7 @@ var boatStart = null;
     <div id="monitor_container">
         @if(session.get("id").getOrElse(null) == game.players(0).playerID){
             <div id="monitor_own">
-                <span>@game.players(0).playerName</span>
+                <span>Eigenes Spielfeld!</span>
                 <table id="own_game_area" class="game_area"  onmouseout="resetHighlights()">
                 @for(y <- 0 until game.fieldSize) {
                     <tr>
@@ -68,7 +68,7 @@ var boatStart = null;
                 </table>
             </div>
             <div id="monitor_opponent">
-                <span>@game.players(1).playerName</span>
+                <span>@game.players(1).playerName's Spielfeld!</span>
                 <table id="opponent_game_area" class="game_area">
                 @for(y <- 0 until game.fieldSize) {
                     <tr>
@@ -91,7 +91,7 @@ var boatStart = null;
             </div>
         }else {
             <div id="monitor_own">
-                <span>@game.players(1).playerName</span>
+                <span>Eigenes Spielfeld!</span>
                 <table id="own_game_area" class="game_area"  onmouseout="resetHighlights()">
                 @if(session.get("id").getOrElse(null) == game.players(1).playerID) {
                     @for(y <- 0 until game.fieldSize) {
@@ -119,7 +119,7 @@ var boatStart = null;
                 </table>
             </div>
             <div id="monitor_opponent">
-                <span>@game.players(0).playerName</span>
+                <span>@game.players(0).playerName's Spielfeld</span>
                 <table id="opponent_game_area" class="game_area">
                 @for(y <- 0 until game.fieldSize) {
                     <tr>
