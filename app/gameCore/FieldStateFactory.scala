@@ -1,4 +1,4 @@
-package coreGame
+package gameCore
 
 /** factory to create FieldStates */
 object FieldStateFactory {
@@ -19,7 +19,7 @@ object FieldStateFactory {
   def create(fieldSize:Int,boatCount:IndexedSeq[Int],totalBoatsCount:Int): FieldState = {
     val boatsLeft: IndexedSeq[Int] = cloneSequence(boatCount)
     val boatLife: Vector[Int] = Vector[Int]()
-    val gameArea: StaticGameArea = StaticGameAreaFactory.create(fieldSize,totalBoatsCount)
+    val gameArea: GameArea = GameAreaFactory.create(fieldSize,totalBoatsCount)
     val shotResult: Int = -1
     new FieldState(fieldSize,boatCount,totalBoatsCount,boatsLeft,IndexedSeq.fill(fieldSize*fieldSize)(0),boatLife,gameArea,shotResult)
   }

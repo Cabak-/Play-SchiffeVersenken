@@ -1,7 +1,7 @@
 package controllers
 
 import java.lang.ProcessBuilder.Redirect
-import coreGame.{ConcreteGameController, GameController, RemotePlayer}
+import gameCore.{ConcreteGameController, GameController, RemotePlayer}
 import play.api._
 import play.api.data.Form
 import play.api.mvc._

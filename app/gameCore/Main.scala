@@ -1,4 +1,4 @@
-/** main object of the game
+/** main object of the game */
 object Main {
 
   /** main method of the game */
@@ -27,4 +27,3 @@ object Main {
   }
 
 }
-*/

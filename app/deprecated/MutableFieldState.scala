@@ -1,4 +1,5 @@
-/*package coreGame
+package deprecated
+import gameCore._
 
 /** class to keep track of the non-static information about a game field,
   * i.e. which cells have been uncovered by shots */
@@ -71,7 +72,7 @@ class MutableBasicFieldState(val areaSize: Int, val boatCount: Array[Int], val t
 /** extension of the field state class for states where the life
   * of each boat is also known and the instance of the program is also
   * able to tell when a boat was sunk */
-class MutableFieldState(areaSize: Int, boatCount: Array[Int], totalBoatCount: Int, var gameArea: StaticGameArea) extends BasicFieldState(areaSize,boatCount,totalBoatCount) {
+class MutableFieldState(areaSize: Int, boatCount: Array[Int], totalBoatCount: Int, var gameArea: MutableGameArea) extends MutableBasicFieldState(areaSize,boatCount,totalBoatCount) {
 
   /** create the game area */
   //val gameArea: GameArea = new GameArea(totalBoatCount)
@@ -119,5 +120,3 @@ class MutableFieldState(areaSize: Int, boatCount: Array[Int], totalBoatCount: In
   }
 
 }
-
-*/

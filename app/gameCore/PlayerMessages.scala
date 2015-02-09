@@ -1,4 +1,4 @@
-package coreGame
+package gameCore
 
 /** enumeration for messages passed to the player (not exceptions) */
 object PlayerMessages extends Enumeration {

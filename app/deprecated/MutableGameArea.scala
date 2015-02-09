@@ -1,7 +1,8 @@
-package coreGame
+package deprecated
+import gameCore._
 
 /** class to manage the positioning of boats */
-class GameArea(val fieldSize: Int, val totalBoatCount: Int) {
+class MutableGameArea(val fieldSize: Int, val totalBoatCount: Int) {
 
 	/** array of all boat objects that have been placed in the GameArea */
 	val boatObjects = new Array[Boat](totalBoatCount)

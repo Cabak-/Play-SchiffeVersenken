@@ -1,4 +1,4 @@
-package coreGame
+package gameCore
 
 /** enumeration for possible states of players */
 object PlayerStates extends Enumeration {

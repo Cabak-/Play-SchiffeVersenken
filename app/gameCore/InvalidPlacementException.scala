@@ -1,4 +1,4 @@
-package coreGame
+package gameCore
 
 /** an exception for invalid placements of boats */
 class InvalidPlacementException extends Exception {

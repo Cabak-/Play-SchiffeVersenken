@@ -1,4 +1,4 @@
-package coreGame
+package gameCore
 
 /** class that stores information about a boat to easily pass it to methods */
 class Boat(sX: Int, sY: Int, l: Int, dir: Boolean, i: Int) {

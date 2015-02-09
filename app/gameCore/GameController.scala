@@ -1,4 +1,4 @@
-package coreGame
+package gameCore
 
 import PlayerMessages._
 

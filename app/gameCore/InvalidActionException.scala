@@ -1,4 +1,4 @@
-package coreGame
+package gameCore
 
 /** an exception for invalid turns by players */
 class InvalidActionException extends Exception {

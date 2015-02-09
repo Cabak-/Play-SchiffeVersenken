@@ -1,7 +1,7 @@
-package coreGame
+package gameCore
 
 /** immutable class to manage the positioning of boats */
-class StaticGameArea(val fieldSize: Int, val totalBoatCount: Int, val boatObjects: IndexedSeq[Boat], val cells: IndexedSeq[Int]) {
+class GameArea(val fieldSize: Int, val totalBoatCount: Int, val boatObjects: IndexedSeq[Boat], val cells: IndexedSeq[Int]) {
 
   /** checks if a cell contains a part of a boat, returns the respective boat id */
   def checkCell(x: Int, y: Int): Int = {
@@ -28,16 +28,16 @@ class StaticGameArea(val fieldSize: Int, val totalBoatCount: Int, val boatObject
   /* places a boat in the GameArea by receiving a boat object and creating a new game area */
   @throws[BoatOverlapException]("The placement of your boat was unsuccessful!")
   @throws[BoatOverhangException]("The placement of your boat was unsuccessful!")
-  def placeBoat(boat: Boat): StaticGameArea = {
+  def placeBoat(boat: Boat): GameArea = {
     val endX: Int = boat.getEndX
     val endY: Int = boat.getEndY
     println ("StartX: " + boat.startX + " EndX: "+endX +" StartY: "+boat.startY +" EndY: " + endY)
     if (checkForOverhang(boat)) {
       if(checkForOverlap(boat)){
         if (boat.startX != endX) { // horizontal placement
-          return new StaticGameArea(fieldSize,totalBoatCount,boatObjects:+(boat),createAlteredSequence(cells,boat.startX,endX,boat.startY,boat.id,true))
+          return new GameArea(fieldSize,totalBoatCount,boatObjects:+(boat),createAlteredSequence(cells,boat.startX,endX,boat.startY,boat.id,true))
         } else {
-          return new StaticGameArea(fieldSize,totalBoatCount,boatObjects:+(boat),createAlteredSequence(cells,boat.startY,endY,boat.startX,boat.id,false))
+          return new GameArea(fieldSize,totalBoatCount,boatObjects:+(boat),createAlteredSequence(cells,boat.startY,endY,boat.startX,boat.id,false))
         }
       } else {
         throw new BoatOverlapException

@@ -1,4 +1,4 @@
-package coreGame
+package gameCore
 
 /** immutable class to keep track of the non-static information about a game field,
   * i.e. which cells have been uncovered by shots */
@@ -66,7 +66,7 @@ class BasicFieldState(val areaSize: Int, val boatCount: IndexedSeq[Int], val tot
 	* of each boat is also known and the instance of the program is also
 	* able to tell when a boat was sunk */
 class FieldState(areaSize: Int, boatCount: IndexedSeq[Int], totalBoatCount: Int,boatsLeft: IndexedSeq[Int],
-                 visualCells: IndexedSeq[Int], val boatLife: IndexedSeq[Int], val gameArea: StaticGameArea, val shotResult: Int)
+                 visualCells: IndexedSeq[Int], val boatLife: IndexedSeq[Int], val gameArea: GameArea, val shotResult: Int)
   extends BasicFieldState(areaSize,boatCount,totalBoatCount,boatsLeft,visualCells) {
 
 	/** reset the boat life */

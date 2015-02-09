@@ -1,4 +1,4 @@
-package coreGame
+package gameCore
 
 /** factory to create GameStates */
 object GameStateFactory {
