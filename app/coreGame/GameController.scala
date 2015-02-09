@@ -12,7 +12,7 @@ trait GameController {
 	def fieldSize: Int = 10
 
 	/** amount of boats of the length 0 to 5 */
-	def boatCount: Array[Int] = Array(0,0,1,0,0,0)
+	def boatCount: IndexedSeq[Int] = Vector(0,0,1,0,0,0)
 
 	/** the total amount of boats for each player */
 	def totalBoatCount: Int
@@ -59,6 +59,7 @@ trait GameController {
 		try {
 			val shotResult: Int = gameState.proceedShot(player,x,y)
 			shotResult match {
+        case -1 => return false // no shot was registered!
 				case 0 => player.passMessage(WATER)
 				case 1 => player.passMessage(HIT)
 				case 2 => player.passMessage(SUNK)

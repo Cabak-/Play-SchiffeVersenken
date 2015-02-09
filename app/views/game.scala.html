@@ -48,14 +48,14 @@ var boatStart = null;
                     <tr>
                     @for(x <- 0 until game.fieldSize) {
                         <td id="own_cell_@{x}_@y" class="own_cell" onclick="placeBoat(@x,@y,'@session.get("id").getOrElse(null)','@routes.Application.placeBoat')" onmouseover="placementMouseEvent(this,@x,@y)">
-                        @if(game.gameState.fieldState1.visualCells(x)(y) == 0){
+                        @if(game.gameState.fieldState1.getVisualCell(x,y) == 0){
                             @if(game.gameState.fieldState1.gameArea.checkCell(x,y) != 0) {
                                 O
                             } else {
                                 &nbsp;
                             }
                         }else{
-                            @if(game.gameState.fieldState1.visualCells(x)(y) == 1) {
+                            @if(game.gameState.fieldState1.getVisualCell(x,y) == 1) {
                                 X
                             } else {
                                 *
@@ -74,8 +74,8 @@ var boatStart = null;
                     <tr>
                     @for(x <- 0 until game.fieldSize) {
                         <td id="opponent_cell_@{x}_@y"  onclick="shoot(@x,@y,'@session.get("id").getOrElse(null)','@routes.Application.shoot')">
-                            @if(game.gameState.fieldState2.visualCells(x)(y) != 0) {
-                                @if(game.gameState.fieldState2.visualCells(x)(y) == 1) {
+                            @if(game.gameState.fieldState2.getVisualCell(x,y) != 0) {
+                                @if(game.gameState.fieldState2.getVisualCell(x,y) == 1) {
                                     X
                                 } else {
                                     *
@@ -98,14 +98,14 @@ var boatStart = null;
                         <tr>
                         @for(x <- 0 until game.fieldSize) {
                             <td id="own_cell_@{x}_@y" class="own_cell" onclick="placeBoat(@x,@y,'@session.get("id").getOrElse(null)','@routes.Application.placeBoat')" onmouseover="placementMouseEvent(this,@x,@y)">
-                            @if(game.gameState.fieldState2.visualCells(x)(y) == 0){
+                            @if(game.gameState.fieldState2.getVisualCell(x,y) == 0){
                                 @if(game.gameState.fieldState2.gameArea.checkCell(x,y) != 0) {
                                     O
                                 } else {
                                     &nbsp;
                                 }
                             }else {
-                                @if(game.gameState.fieldState2.visualCells(x)(y) == 1) {
+                                @if(game.gameState.fieldState2.getVisualCell(x,y) == 1) {
                                     X
                                 } else {
                                     *
@@ -125,8 +125,8 @@ var boatStart = null;
                     <tr>
                     @for(x <- 0 until game.fieldSize) {
                         <td id="opponent_cell_@{x}_@y"  onclick="shoot(@x,@y,'@session.get("id").getOrElse(null)','@routes.Application.shoot')">
-                            @if(game.gameState.fieldState1.visualCells(x)(y) != 0) {
-                                @if(game.gameState.fieldState1.visualCells(x)(y) == 1) {
+                            @if(game.gameState.fieldState1.getVisualCell(x,y) != 0) {
+                                @if(game.gameState.fieldState1.getVisualCell(x,y) == 1) {
                                     X
                                 } else {
                                     *

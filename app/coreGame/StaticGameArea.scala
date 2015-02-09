@@ -3,8 +3,10 @@ package coreGame
 /** immutable class to manage the positioning of boats */
 class StaticGameArea(val fieldSize: Int, val totalBoatCount: Int, val boatObjects: IndexedSeq[Boat], val cells: IndexedSeq[Int]) {
 
-  /** sequence of information about the cells (integer values are 0 for water or the id of a boat) */
-  //val cells = IndexedSeq[Int](fieldSize*fieldSize)
+  /** checks if a cell contains a part of a boat, returns the respective boat id */
+  def checkCell(x: Int, y: Int): Int = {
+    return cells(y*fieldSize+x)
+  }
 
   /** places a boat by creating a new sequence recursively */
   def createAlteredSequence(old: IndexedSeq[Int],start1:Int,end1:Int,coo2:Int,id:Int,horizontal:Boolean): IndexedSeq[Int] = {
@@ -71,11 +73,6 @@ class StaticGameArea(val fieldSize: Int, val totalBoatCount: Int, val boatObject
       }
     }
     return true
-  }
-
-  /** checks if a cell contains a part of a boat, returns the respective boat id */
-  def checkCell(x: Int, y: Int): Int = {
-    return cells(y*fieldSize+x)
   }
 
   /* outputs the GameArea on the console */

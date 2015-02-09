@@ -4,7 +4,7 @@ import PlayerMessages._
 
 /** model for the game state, including information about the current
   * phase of the game and non-static information about the fields */
-class GameState(fieldSize: Int, player1: Player, player2: Player, boatCount: Array[Int], totalBoatsCount: Int) {
+class GameState(fieldSize: Int, player1: Player, player2: Player, boatCount: IndexedSeq[Int], totalBoatsCount: Int) {
 
   /** the boats player 1 and 2 still have to set */
   var boatsToPlace: Map[Player,Int] = Map(player1 -> totalBoatsCount, player2 -> totalBoatsCount)
@@ -13,25 +13,27 @@ class GameState(fieldSize: Int, player1: Player, player2: Player, boatCount: Arr
   var playerTurn: Player = player1
 
   /** field state for player 1 */
-  val fieldState1: FieldState = new FieldState(fieldSize,boatCount,totalBoatsCount,StaticGameAreaFactory.create(fieldSize,totalBoatsCount))
+  var fieldState1: FieldState = FieldStateFactory.create(fieldSize,boatCount,totalBoatsCount)
+    //new FieldState(fieldSize,boatCount,totalBoatsCount,StaticGameAreaFactory.create(fieldSize,totalBoatsCount))
 
   /** field state for player 2 */
-  val fieldState2: FieldState = new FieldState(fieldSize,boatCount,totalBoatsCount,StaticGameAreaFactory.create(fieldSize,totalBoatsCount))
+  var fieldState2: FieldState = FieldStateFactory.create(fieldSize,boatCount,totalBoatsCount)
+    //new FieldState(fieldSize,boatCount,totalBoatsCount,StaticGameAreaFactory.create(fieldSize,totalBoatsCount))
 
   /** map from players to their field states */
-  val fieldStateMap: Map[Player,FieldState] = Map(player1 -> fieldState1, player2 -> fieldState2)
+  var fieldStateMap: Map[Player,FieldState] = Map(player1 -> fieldState1, player2 -> fieldState2)
 
 
   /** resets the field states (needs to be done at the beginning of the game) */
   def resetFieldStates: Unit = {
-    fieldState1.reset
-    fieldState2.reset
+    //fieldState1.reset
+    //fieldState2.reset
   }
 
   /** resets the boat life (needs to be done at the beginning of the game) */
   def resetBoatLife: Unit = {
-    fieldState1.resetLife
-    fieldState2.resetLife
+    //fieldState1.resetLife
+    //fieldState2.resetLife
   }
 
   /** returns the opponent of a given player */
@@ -81,7 +83,10 @@ class GameState(fieldSize: Int, player1: Player, player2: Player, boatCount: Arr
 
     // try to place the boat, can produce InvalidPlacementExceptions
     val newBoat: Boat = new Boat(x,y,l,horizontal,getNextBoatID(player))
-    fieldStateMap(player).gameArea = fieldStateMap(player).gameArea.placeBoat(newBoat)
+    //val newGameArea: StaticGameArea = fieldStateMap(player).gameArea.placeBoat(newBoat)
+    if (player == player1) fieldState1 = fieldState1.placeBoat(newBoat)
+    else fieldState2 = fieldState2.placeBoat(newBoat)
+    fieldStateMap = Map(player1 -> fieldState1, player2 -> fieldState2)
 
     // boat was successfully placed (no exceptions caused)
     boatsToPlace = boatsToPlace + (player -> (boatsToPlace(player) - 1))
@@ -89,7 +94,7 @@ class GameState(fieldSize: Int, player1: Player, player2: Player, boatCount: Arr
     // checks if it is the next player's turn
     if (boatsToPlace(player) == 0) {
       // reset the boat life for the player who has finished placing his boats
-      fieldStateMap(player).resetLife
+      //fieldStateMap(player).resetLife
       // switch the turn
       switchTurn
     }
@@ -108,8 +113,13 @@ class GameState(fieldSize: Int, player1: Player, player2: Player, boatCount: Arr
       throw new ShotNotInFieldException
     }
 
-    // shoot and return the result (0: water, 1: hit, 2: hit + boat sunk)
-    val shotResult: Int = fieldStateMap(opponent).registerShot(x,y)
+    // shoot and thereby change the field state
+    if (player == player1) fieldState2 = fieldState2.registerShot(x,y)
+    else fieldState1 = fieldState1.registerShot(x,y)
+    fieldStateMap = Map(player1 -> fieldState1, player2 -> fieldState2)
+
+    // return the result (0: water, 1: hit, 2: hit + boat sunk)
+    val sResult: Int = fieldStateMap(opponent).shotResult
 
     // switch the turn
     switchTurn
@@ -119,7 +129,7 @@ class GameState(fieldSize: Int, player1: Player, player2: Player, boatCount: Arr
       return 3
     }
 
-    return shotResult;
+    return sResult;
   }
 
 }
