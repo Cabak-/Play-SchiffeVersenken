@@ -12,7 +12,7 @@ trait GameController {
 	def fieldSize: Int = 10
 
 	/** amount of boats of the length 0 to 5 */
-	def boatCount: IndexedSeq[Int] = Vector(0,0,1,0,0,0)
+	def boatCount: IndexedSeq[Int] = Vector(0,0,2,0,0,0)
 
 	/** the total amount of boats for each player */
 	def totalBoatCount: Int
@@ -24,7 +24,7 @@ trait GameController {
   def totalPlayerCount: Int = 2
 
 	/** the game state */
-	def gameState: GameState
+	var gameState: GameState = null
 
 	/** calculates the total number of boats */
 	def getTotalBoatCount(): Int = {
@@ -41,7 +41,8 @@ trait GameController {
 	/** registers a boat placement by a player */
 	def placeBoat(player: Player, x: Int, y: Int, l: Int, horizontal: Boolean): Boolean = {
 		try {
-			gameState.placeBoat(player,x,y,l,horizontal)
+      // change game state
+			gameState = gameState.placeBoat(player,x,y,l,horizontal)
 			player.passMessage(BOAT_PLACED)
 			return true
 		} catch {
@@ -57,7 +58,13 @@ trait GameController {
 	/** registers a shot by a player */
 	def proceedShot(player: Player, x: Int, y: Int): Boolean = {
 		try {
-			val shotResult: Int = gameState.proceedShot(player,x,y)
+      // change game state
+			gameState = gameState.proceedShot(player,x,y)
+      // result of the shot
+      val shotResult: Int = if (player == gameState.player1) gameState.fieldStateMap(gameState.player2).shotResult
+      else gameState.fieldStateMap(gameState.player1).shotResult
+      //println("RESULT: " + shotResult)
+
 			shotResult match {
         case -1 => return false // no shot was registered!
 				case 0 => player.passMessage(WATER)
@@ -89,7 +96,8 @@ class ConcreteGameController(val id: String, val player1: RemotePlayer, val play
 	val totalBoatCount: Int = getTotalBoatCount()
 
 	/** the game state */
-	val gameState: GameState = new GameState(fieldSize,player1,player2,boatCount,totalBoatCount)
+	gameState = GameStateFactory.create(fieldSize,player1,player2,boatCount,totalBoatCount)
+    //new GameState(fieldSize,player1,player2,boatCount,totalBoatCount)
 
   gameState.resetFieldStates
 
@@ -106,7 +114,8 @@ class ConsoleGameController(val id: String, val player1: ConsolePlayer, val play
 	val totalBoatCount: Int = getTotalBoatCount()
 
 	/** create the game state */
-	val gameState: GameState = new GameState(fieldSize,player1,player2,boatCount,totalBoatCount)
+	gameState = GameStateFactory.create(fieldSize,player1,player2,boatCount,totalBoatCount)
+    //new GameState(fieldSize,player1,player2,boatCount,totalBoatCount)
 
 	/** initializes the game */
 	def initGame(): Unit = {
@@ -172,7 +181,7 @@ class ConsoleGameController(val id: String, val player1: ConsolePlayer, val play
 					//playerTurn.passMessage(YOU_WIN) // now done automatically after a shot
 				} else {
 					// switch the turn and proceed
-					gameState.switchTurn
+					gameState = gameState.switchTurn
 					proceedGame
 				}
 			}	else { // shot was not successful (or game was finished)

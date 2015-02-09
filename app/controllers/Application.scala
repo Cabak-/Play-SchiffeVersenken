@@ -191,7 +191,7 @@ object Application extends Controller {
       }
       //val opponent = arrayOfGames(0).gameState.getOpponent(player)
       if (arrayOfGames(0).gameState.fieldStateMap(player).isFinished) {
-        Ok(views.html.game(opponent.playerName + "hat leider gewonnen! Versuche es doch noch einmal!", arrayOfGames(0)))
+        Ok(views.html.game(opponent.playerName + " hat leider gewonnen! Versuche es doch noch einmal!", arrayOfGames(0)))
       } else {
         if(arrayOfGames(0).gameState.isPlacementFinished) {
           Ok(views.html.game("Du darfst auf das Gegnerische Feld schießen!", arrayOfGames(0)))

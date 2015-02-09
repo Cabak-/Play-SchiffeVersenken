@@ -4,24 +4,25 @@ import PlayerMessages._
 
 /** model for the game state, including information about the current
   * phase of the game and non-static information about the fields */
-class GameState(fieldSize: Int, player1: Player, player2: Player, boatCount: IndexedSeq[Int], totalBoatsCount: Int) {
+class GameState(fieldSize: Int, val player1: Player, val player2: Player, boatCount: IndexedSeq[Int], totalBoatsCount: Int,
+                val boatsToPlace: Map[Player,Int], val playerTurn: Player, val fieldState1: FieldState, val fieldState2: FieldState) {
 
   /** the boats player 1 and 2 still have to set */
-  var boatsToPlace: Map[Player,Int] = Map(player1 -> totalBoatsCount, player2 -> totalBoatsCount)
+  //var boatsToPlace: Map[Player,Int] = Map(player1 -> totalBoatsCount, player2 -> totalBoatsCount)
 
   /** which player's turn */
-  var playerTurn: Player = player1
+  //var playerTurn: Player = player1
 
   /** field state for player 1 */
-  var fieldState1: FieldState = FieldStateFactory.create(fieldSize,boatCount,totalBoatsCount)
+  //var fieldState1: FieldState = FieldStateFactory.create(fieldSize,boatCount,totalBoatsCount)
     //new FieldState(fieldSize,boatCount,totalBoatsCount,StaticGameAreaFactory.create(fieldSize,totalBoatsCount))
 
   /** field state for player 2 */
-  var fieldState2: FieldState = FieldStateFactory.create(fieldSize,boatCount,totalBoatsCount)
+ // var fieldState2: FieldState = FieldStateFactory.create(fieldSize,boatCount,totalBoatsCount)
     //new FieldState(fieldSize,boatCount,totalBoatsCount,StaticGameAreaFactory.create(fieldSize,totalBoatsCount))
 
   /** map from players to their field states */
-  var fieldStateMap: Map[Player,FieldState] = Map(player1 -> fieldState1, player2 -> fieldState2)
+  val fieldStateMap: Map[Player,FieldState] = Map(player1 -> fieldState1, player2 -> fieldState2)
 
 
   /** resets the field states (needs to be done at the beginning of the game) */
@@ -43,8 +44,9 @@ class GameState(fieldSize: Int, player1: Player, player2: Player, boatCount: Ind
   }
 
   /** switches the turn to the other player */
-  def switchTurn: Unit = {
-    playerTurn = getOpponent(playerTurn)
+  def switchTurn: GameState = {
+    val newPlayerTurn = getOpponent(playerTurn)
+    new GameState(fieldSize, player1, player2, boatCount, totalBoatsCount, boatsToPlace, newPlayerTurn, fieldState1, fieldState2)
   }
 
   /** checks if the boat placement phase was ended */
@@ -75,7 +77,7 @@ class GameState(fieldSize: Int, player1: Player, player2: Player, boatCount: Ind
   def isPlayersTurn(player: Player): Boolean = (playerTurn == player)
 
   /** registers a boat placement by a player */
-  def placeBoat(player: Player, x: Int, y: Int, l: Int, horizontal: Boolean): Unit = {
+  def placeBoat(player: Player, x: Int, y: Int, l: Int, horizontal: Boolean): GameState = {
     // is it the player's turn?
     if (!isPlayersTurn(player)) throw new NotPlayersTurnException
     // is the player still in the boat placement phase?
@@ -84,24 +86,43 @@ class GameState(fieldSize: Int, player1: Player, player2: Player, boatCount: Ind
     // try to place the boat, can produce InvalidPlacementExceptions
     val newBoat: Boat = new Boat(x,y,l,horizontal,getNextBoatID(player))
     //val newGameArea: StaticGameArea = fieldStateMap(player).gameArea.placeBoat(newBoat)
-    if (player == player1) fieldState1 = fieldState1.placeBoat(newBoat)
-    else fieldState2 = fieldState2.placeBoat(newBoat)
-    fieldStateMap = Map(player1 -> fieldState1, player2 -> fieldState2)
+    if (player == player1) {
+      // change field state 1
+      val newFieldState1: FieldState = fieldState1.placeBoat(newBoat)
 
-    // boat was successfully placed (no exceptions caused)
-    boatsToPlace = boatsToPlace + (player -> (boatsToPlace(player) - 1))
+      // boat was successfully placed (no exceptions caused)
+      val newBoatsToPlace = boatsToPlace + (player -> (boatsToPlace(player) - 1))
 
-    // checks if it is the next player's turn
-    if (boatsToPlace(player) == 0) {
-      // reset the boat life for the player who has finished placing his boats
-      //fieldStateMap(player).resetLife
-      // switch the turn
-      switchTurn
+      println("LEFT TO PLACE 1: " + newBoatsToPlace(player))
+      println("LEFT TO PLACE 2: " + newBoatsToPlace(getOpponent(player)))
+
+      // checks if it is the next player's turn
+      val newPlayerTurn: Player = if (newBoatsToPlace(player) == 0) getOpponent(playerTurn) else playerTurn
+
+      if (newPlayerTurn == player1) println("NEXT: PLAYER 1") else println("NEXT: PLAYER 2")
+
+      return new GameState(fieldSize, player1, player2, boatCount, totalBoatsCount, newBoatsToPlace, newPlayerTurn, newFieldState1, fieldState2)
+    } else {
+      // change field state 2
+      val newFieldState2: FieldState = fieldState2.placeBoat(newBoat)
+
+      // boat was successfully placed (no exceptions caused)
+      val newBoatsToPlace = boatsToPlace + (player -> (boatsToPlace(player) - 1))
+
+      println("LEFT TO PLACE 2: " + newBoatsToPlace(player))
+      println("LEFT TO PLACE 1: " + newBoatsToPlace(getOpponent(player)))
+
+      // checks if it is the next player's turn
+      val newPlayerTurn: Player = if (newBoatsToPlace(player) == 0) getOpponent(playerTurn) else playerTurn
+
+      if (newPlayerTurn == player1) println("NEXT: PLAYER 1") else println("NEXT: PLAYER 2")
+
+      return new GameState(fieldSize, player1, player2, boatCount, totalBoatsCount, newBoatsToPlace, newPlayerTurn, fieldState1, newFieldState2)
     }
   }
 
   /** registers a shot by a player at a cell */
-  def proceedShot(player: Player, x: Int, y: Int): Int = {
+  def proceedShot(player: Player, x: Int, y: Int): GameState = {
     // is it the player's turn?
     if (!isPlayersTurn(player)) throw new NotPlayersTurnException
     // is the placement phase finished?
@@ -114,22 +135,23 @@ class GameState(fieldSize: Int, player1: Player, player2: Player, boatCount: Ind
     }
 
     // shoot and thereby change the field state
-    if (player == player1) fieldState2 = fieldState2.registerShot(x,y)
-    else fieldState1 = fieldState1.registerShot(x,y)
-    fieldStateMap = Map(player1 -> fieldState1, player2 -> fieldState2)
+    if (player == player1) {
+      // change field state 2
+      val newFieldState2: FieldState = fieldState2.registerShot(x,y)
 
-    // return the result (0: water, 1: hit, 2: hit + boat sunk)
-    val sResult: Int = fieldStateMap(opponent).shotResult
+      // switch the turn
+      val newPlayerTurn: Player = getOpponent(playerTurn)
 
-    // switch the turn
-    switchTurn
+      return new GameState(fieldSize, player1, player2, boatCount, totalBoatsCount, boatsToPlace, newPlayerTurn, fieldState1, newFieldState2)
+    } else {
+      // change field state 1
+      val newFieldState1: FieldState = fieldState1.registerShot(x,y)
 
-    // has the player won the game? -> 3
-    if (fieldStateMap(opponent).isFinished) {
-      return 3
+      // switch the turn
+      val newPlayerTurn: Player = getOpponent(playerTurn)
+
+      return new GameState(fieldSize, player1, player2, boatCount, totalBoatsCount, boatsToPlace, newPlayerTurn, newFieldState1, fieldState2)
     }
-
-    return sResult;
   }
 
 }

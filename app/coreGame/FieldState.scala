@@ -100,22 +100,31 @@ class FieldState(areaSize: Int, boatCount: IndexedSeq[Int], totalBoatCount: Int,
         /*println("-----------------------------")
         for (i <- 0 until newBoatLife.length) {
           println("LIFE:" + i + " - " + newBoatLife(i))
-        }
-        println("new boat life of id #" + id + ": " + newBoatLife(id-1))*/
+        }*/
+        //println("new boat life of id #" + id + ": " + newBoatLife(id-1))
 
 				// check if the boat has been sunk
         val newBoatsLeft: IndexedSeq[Int] = {
           if (newBoatLife(id - 1) > 0) boatsLeft
-          else boatsLeft.updated(gameArea.boatObjects(id-1).length,boatsLeft(gameArea.boatObjects(id-1).length - 1))
+          else boatsLeft.updated(gameArea.boatObjects(id-1).length,boatsLeft(gameArea.boatObjects(id-1).length) - 1)
         };
 
         /*for (i <- 0 until newBoatsLeft.length) {
           println("LEFT:" + i + " - " + newBoatsLeft(i))
         }*/
 
+        // function to check immediately if the game is finished
+        def allBoatsDestroyed(left: IndexedSeq[Int]): Boolean= {
+          for (i <- 1 until left.size) {
+            if (left(i) > 0) return false
+          }
+          return true
+        }
+
         // get the shot result
         val newShotResult: Int = {
-          if (boatLife(id - 1) > 0) 1
+          if (newBoatLife(id - 1) > 0) 1
+          else if (allBoatsDestroyed(newBoatsLeft)) 3
           else 2
         };
 
