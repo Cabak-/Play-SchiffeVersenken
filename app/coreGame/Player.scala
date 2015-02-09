@@ -1,4 +1,5 @@
-package models
+package coreGame
+
 import PlayerMessages._
 
 /** trait for players that participate in the game */

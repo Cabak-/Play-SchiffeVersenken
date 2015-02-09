@@ -93,6 +93,6 @@ div#monitor_opponent {
     font-weight: bold;
 }
 #forfeit{
-    position: inherit;
+    position: relative;
     margin: 10px;
 }

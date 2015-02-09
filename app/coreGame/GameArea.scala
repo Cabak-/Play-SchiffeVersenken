@@ -1,4 +1,5 @@
-package models
+package coreGame
+
 /** class to manage the positioning of boats */
 class GameArea(val totalBoatCount: Int) {
 	
