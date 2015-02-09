@@ -2,40 +2,22 @@ package gameCore
 
 import PlayerMessages._
 
-/** model for the game state, including information about the current
-  * phase of the game and non-static information about the fields */
+/** immutable model for the game state, including all information about the current
+  * phase of the game and the state of the fields
+  * @param fieldSize size of the field
+  * @param player1 first player
+  * @param player2 second player
+  * @param boatCount amount of boats of length i
+  * @param totalBoatsCount total amount of boats
+  * @param boatsToPlace the boats player 1 and 2 still have to set
+  * @param fieldState1 field state for player 1
+  * @param fieldState2 field state for player 2
+  */
 class GameState(fieldSize: Int, val player1: Player, val player2: Player, boatCount: IndexedSeq[Int], totalBoatsCount: Int,
                 val boatsToPlace: Map[Player,Int], val playerTurn: Player, val fieldState1: FieldState, val fieldState2: FieldState) {
 
-  /** the boats player 1 and 2 still have to set */
-  //var boatsToPlace: Map[Player,Int] = Map(player1 -> totalBoatsCount, player2 -> totalBoatsCount)
-
-  /** which player's turn */
-  //var playerTurn: Player = player1
-
-  /** field state for player 1 */
-  //var fieldState1: FieldState = FieldStateFactory.create(fieldSize,boatCount,totalBoatsCount)
-    //new FieldState(fieldSize,boatCount,totalBoatsCount,StaticGameAreaFactory.create(fieldSize,totalBoatsCount))
-
-  /** field state for player 2 */
- // var fieldState2: FieldState = FieldStateFactory.create(fieldSize,boatCount,totalBoatsCount)
-    //new FieldState(fieldSize,boatCount,totalBoatsCount,StaticGameAreaFactory.create(fieldSize,totalBoatsCount))
-
   /** map from players to their field states */
   val fieldStateMap: Map[Player,FieldState] = Map(player1 -> fieldState1, player2 -> fieldState2)
-
-
-  /** resets the field states (needs to be done at the beginning of the game) */
-  def resetFieldStates: Unit = {
-    //fieldState1.reset
-    //fieldState2.reset
-  }
-
-  /** resets the boat life (needs to be done at the beginning of the game) */
-  def resetBoatLife: Unit = {
-    //fieldState1.resetLife
-    //fieldState2.resetLife
-  }
 
   /** returns the opponent of a given player */
   def getOpponent(player: Player): Player = {
@@ -93,13 +75,9 @@ class GameState(fieldSize: Int, val player1: Player, val player2: Player, boatCo
       // boat was successfully placed (no exceptions caused)
       val newBoatsToPlace = boatsToPlace + (player -> (boatsToPlace(player) - 1))
 
-      println("LEFT TO PLACE 1: " + newBoatsToPlace(player))
-      println("LEFT TO PLACE 2: " + newBoatsToPlace(getOpponent(player)))
-
       // checks if it is the next player's turn
       val newPlayerTurn: Player = if (newBoatsToPlace(player) == 0) getOpponent(playerTurn) else playerTurn
 
-      if (newPlayerTurn == player1) println("NEXT: PLAYER 1") else println("NEXT: PLAYER 2")
 
       return new GameState(fieldSize, player1, player2, boatCount, totalBoatsCount, newBoatsToPlace, newPlayerTurn, newFieldState1, fieldState2)
     } else {
@@ -109,13 +87,8 @@ class GameState(fieldSize: Int, val player1: Player, val player2: Player, boatCo
       // boat was successfully placed (no exceptions caused)
       val newBoatsToPlace = boatsToPlace + (player -> (boatsToPlace(player) - 1))
 
-      println("LEFT TO PLACE 2: " + newBoatsToPlace(player))
-      println("LEFT TO PLACE 1: " + newBoatsToPlace(getOpponent(player)))
-
       // checks if it is the next player's turn
       val newPlayerTurn: Player = if (newBoatsToPlace(player) == 0) getOpponent(playerTurn) else playerTurn
-
-      if (newPlayerTurn == player1) println("NEXT: PLAYER 1") else println("NEXT: PLAYER 2")
 
       return new GameState(fieldSize, player1, player2, boatCount, totalBoatsCount, newBoatsToPlace, newPlayerTurn, fieldState1, newFieldState2)
     }

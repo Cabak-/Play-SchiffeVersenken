@@ -58,7 +58,9 @@ trait View {
 }
 
 
-/** a console view that works with simple input and output */
+/** a console view that works with simple input and output
+  * @param player the adressed player using the console
+  */
 class ConsoleView(val player: ConsolePlayer) extends View {
 
   /** reads coordinates from STDIN */
@@ -99,7 +101,9 @@ class ConsoleView(val player: ConsolePlayer) extends View {
 
 }
 
-/** a browser-based view */
+/** a browser-based view
+  * @param player the remote player who owns the browser view
+  */
 class BrowserView(val player: RemotePlayer) extends View {
 
   /** saves the last message that the player received */

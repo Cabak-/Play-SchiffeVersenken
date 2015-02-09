@@ -1,6 +1,12 @@
 package gameCore
 
-/** class that stores information about a boat to easily pass it to methods */
+/** class that stores information about a boat to easily pass it to methods
+  * @param sX first x coordinate
+  * @param sY first y coordinate
+  * @param l length of the boat
+  * @param dir orientation: horizontal (true) or vertical
+  * @param i assign an id to the boat
+  */
 class Boat(sX: Int, sY: Int, l: Int, dir: Boolean, i: Int) {
 	
 		/** x coordinate of the upper / left end of the boat */

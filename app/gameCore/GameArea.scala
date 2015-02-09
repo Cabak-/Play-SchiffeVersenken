@@ -1,6 +1,11 @@
 package gameCore
 
-/** immutable class to manage the positioning of boats */
+/** immutable class to manage the positioning of boats
+  * @param fieldSize size of the field
+  * @param totalBoatCount total amount of boats
+  * @param boatObjects amount of boats of length i
+  * @param cells states of the field's cells
+  */
 class GameArea(val fieldSize: Int, val totalBoatCount: Int, val boatObjects: IndexedSeq[Boat], val cells: IndexedSeq[Int]) {
 
   /** checks if a cell contains a part of a boat, returns the respective boat id */
@@ -31,7 +36,7 @@ class GameArea(val fieldSize: Int, val totalBoatCount: Int, val boatObjects: Ind
   def placeBoat(boat: Boat): GameArea = {
     val endX: Int = boat.getEndX
     val endY: Int = boat.getEndY
-    println ("StartX: " + boat.startX + " EndX: "+endX +" StartY: "+boat.startY +" EndY: " + endY)
+    //println ("StartX: " + boat.startX + " EndX: "+endX +" StartY: "+boat.startY +" EndY: " + endY)
     if (checkForOverhang(boat)) {
       if(checkForOverlap(boat)){
         if (boat.startX != endX) { // horizontal placement
@@ -78,8 +83,8 @@ class GameArea(val fieldSize: Int, val totalBoatCount: Int, val boatObjects: Ind
   /* outputs the GameArea on the console */
   def show{
     println("------------------------")
-    for (y <- 0 until cells.length) {
-      for (x <- 0 until cells.length) {
+    for (y <- 0 until fieldSize) {
+      for (x <- 0 until fieldSize) {
         print(" " + checkCell(x,y))
       }
       println()

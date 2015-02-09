@@ -11,8 +11,9 @@ trait GameController {
 	/** size of the fields */
 	def fieldSize: Int = 10
 
-	/** amount of boats of the length 0 to 5 */
-	def boatCount: IndexedSeq[Int] = Vector(0,0,2,0,0,0)
+	/** amount of boats of the length 0 to 5 (default) */
+  def boatCount: IndexedSeq[Int] = Vector(0,0,4,3,2,1)
+	//def boatCount: IndexedSeq[Int] = Vector(0,0,2,0,0,0)
 
 	/** the total amount of boats for each player */
 	def totalBoatCount: Int
@@ -86,7 +87,11 @@ trait GameController {
 
 }
 
-/** concrete game controller class for asynchronous play via a browser interface */
+/** concrete game controller class for asynchronous play via a browser interface
+  * @param id game ID
+  * @param player1 first player
+  * @param player2 second player
+  */
 class ConcreteGameController(val id: String, val player1: RemotePlayer, val player2: RemotePlayer) extends GameController {
 
 	/** array of player */
@@ -99,13 +104,20 @@ class ConcreteGameController(val id: String, val player1: RemotePlayer, val play
 	gameState = GameStateFactory.create(fieldSize,player1,player2,boatCount,totalBoatCount)
     //new GameState(fieldSize,player1,player2,boatCount,totalBoatCount)
 
-  gameState.resetFieldStates
+  //gameState.resetFieldStates
 
 }
 
 
-/** concrete game controller class with both players playing locally */
-class ConsoleGameController(val id: String, val player1: ConsolePlayer, val player2: ConsolePlayer) extends GameController {
+/** concrete game controller class with both players playing locally
+  * @param id game id
+  * @param fieldSize size of the field
+  * @param boatCount amount of boats of length i
+  * @param player1 first player
+  * @param player2 second player
+  */
+class ConsoleGameController(val id: String, override val fieldSize: Int, override val boatCount: IndexedSeq[Int],
+                            val player1: ConsolePlayer, val player2: ConsolePlayer) extends GameController {
 
 	/** array of player */
 	val players: Array[Player] = Array(player1,player2)
@@ -150,8 +162,8 @@ class ConsoleGameController(val id: String, val player1: ConsolePlayer, val play
 		}
 
 		// initialize the field states
-		gameState.resetFieldStates
-    gameState.resetBoatLife
+		//gameState.resetFieldStates
+    //gameState.resetBoatLife
 
 		// let the players shoot until the game ends
 		def proceedGame: Unit = {
@@ -160,6 +172,9 @@ class ConsoleGameController(val id: String, val player1: ConsolePlayer, val play
 			// determine the opponent and his field state
 			val opponent: Player = gameState.getOpponent(playerTurn)
 			val opponentFieldState: FieldState = gameState.fieldStateMap(opponent)
+
+      // is the game finished?
+      //if (opponentFieldState.isFinished) return
 
 			// prompt the player to press enter
 			playerTurn.requestEnter
@@ -172,20 +187,17 @@ class ConsoleGameController(val id: String, val player1: ConsolePlayer, val play
 
 			// proceed the shot
 			if (proceedShot(playerTurn,shotCoordinates(0),shotCoordinates(1))) {
+        val newOpponentFieldState: FieldState = gameState.fieldStateMap(opponent)
+
 				// shot was successful;
 				// output the current field state
-				opponentFieldState.show
+				newOpponentFieldState.show
 
-				// check if the game is finished
-				if (opponentFieldState.isFinished) {
-					//playerTurn.passMessage(YOU_WIN) // now done automatically after a shot
-				} else {
-					// switch the turn and proceed
-					gameState = gameState.switchTurn
-					proceedGame
-				}
+				// proceed with the game
+        proceedGame
 			}	else { // shot was not successful (or game was finished)
-        if (!opponentFieldState.isFinished) proceedGame
+        val newOpponentFieldState: FieldState = gameState.fieldStateMap(opponent)
+        if (!newOpponentFieldState.isFinished) proceedGame
 			}
 		};
 		proceedGame

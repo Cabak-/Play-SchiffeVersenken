@@ -33,7 +33,10 @@ trait Player {
 }
 
 
-/** a remote player who plays in the browser */
+/** a remote player who plays in the browser
+  * @param playerID ID of the player
+  * @param playerName name of the player
+  */
 class RemotePlayer(val playerID: String, val playerName: String) extends Player {
 
   /** uses a browser view */
@@ -52,7 +55,10 @@ class RemotePlayer(val playerID: String, val playerName: String) extends Player 
 }
 
 
-/** a local player that answers request by console prompts */
+/** a local player that answers request by console prompts
+  * @param playerID ID of the player
+  * @param playerName name of the player
+  */
 class ConsolePlayer(val playerID: String, val playerName: String) extends Player {
 
   /** uses a console view */
