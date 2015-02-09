@@ -12,10 +12,10 @@ class GameState(fieldSize: Int, player1: Player, player2: Player, boatCount: Arr
   var playerTurn: Player = player1
 
   /** field state for player 1 */
-  val fieldState1: FieldState = new FieldState(fieldSize,boatCount,totalBoatsCount,new GameArea(totalBoatsCount))
+  val fieldState1: FieldState = new FieldState(fieldSize,boatCount,totalBoatsCount,new GameArea(fieldSize,totalBoatsCount))
 
   /** field state for player 2 */
-  val fieldState2: FieldState = new FieldState(fieldSize,boatCount,totalBoatsCount,new GameArea(totalBoatsCount))
+  val fieldState2: FieldState = new FieldState(fieldSize,boatCount,totalBoatsCount,new GameArea(fieldSize,totalBoatsCount))
 
   /** map from players to their field states */
   val fieldStateMap: Map[Player,FieldState] = Map(player1 -> fieldState1, player2 -> fieldState2)
