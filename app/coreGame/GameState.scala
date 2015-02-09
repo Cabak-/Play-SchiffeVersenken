@@ -1,4 +1,5 @@
-package models
+package coreGame
+
 import PlayerMessages._
 
 /** model for the game state, including information about the current

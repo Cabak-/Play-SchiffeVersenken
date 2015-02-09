@@ -1,4 +1,5 @@
-package models
+package coreGame
+
 import PlayerMessages._
 
 /** trait for views to output information for a player */

@@ -1,7 +1,7 @@
 package controllers
 
 import java.lang.ProcessBuilder.Redirect
-import models._
+import coreGame.{ConcreteGameController, GameController, RemotePlayer}
 import play.api._
 import play.api.data.Form
 import play.api.mvc._
@@ -67,7 +67,6 @@ object Application extends Controller {
   /** action to shoot at a cell */
   def shoot = Action { implicit request =>
     var result: String = ""
-
     // allow no further actions when the game is already finished
     if (arrayOfGames(0).gameState.fieldState1.isFinished || arrayOfGames(0).gameState.fieldState2.isFinished) {
       result = "Das Spiel ist beendet."

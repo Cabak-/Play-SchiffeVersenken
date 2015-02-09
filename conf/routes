@@ -24,7 +24,7 @@ POST        /shoot               controllers.Application.shoot
 GET         /end                 controllers.Application.endGame
 
 # Wait for PlayerMoves page
-GET        /wait                     controllers.Application.waiting
+GET        /wait                 controllers.Application.waiting
 
 # Map static resources from the /public folder to the /assets URL path
 GET         /assets/*file        controllers.Assets.at(path="/public", file)

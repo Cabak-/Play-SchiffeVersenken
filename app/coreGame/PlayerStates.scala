@@ -1,6 +1,4 @@
-package models
-
-import models.PlayerStates
+package coreGame
 
 /** enumeration for possible states of players */
 object PlayerStates extends Enumeration {

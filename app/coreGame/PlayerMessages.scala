@@ -1,4 +1,5 @@
-package models
+package coreGame
+
 /** enumeration for messages passed to the player (not exceptions) */
 object PlayerMessages extends Enumeration {
   type PlayerMessages = Value

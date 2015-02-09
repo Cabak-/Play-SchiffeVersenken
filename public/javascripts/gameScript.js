@@ -50,8 +50,7 @@ function getElementsByClassName(node,classname) {
 }
 
 /** function to place a boat by selecting two coordinates */
-function placeBoat(x,y) {
-    var player = '@session.get("id").getOrElse(null)';
+function placeBoat(x,y,player,path) {
     if (boatStart == null) {
         boatStart = new Array(x,y);
     } else {
@@ -64,7 +63,7 @@ function placeBoat(x,y) {
                 if (boatStart[1] - boatLength + 1 < 0) return;
                 boatStart[1] = boatStart[1] - boatLength + 1;
             }
-            submitData('@routes.Application.placeBoat',{'player': player, 'x': boatStart[0], 'y': boatStart[1], 'boatLength': boatLength, 'orientation': 'v'});
+            submitData(path,{'player': player, 'x': boatStart[0], 'y': boatStart[1], 'boatLength': boatLength, 'orientation': 'v'});
         } else if ( y == boatStart[ 1 ] && Math.abs(x - boatStart[0]) < boatLength) { // horizontal placement
             if (x > boatStart[0]) {
                 if (boatStart[0] + boatLength - 1 >= fieldSize) return;
@@ -72,7 +71,7 @@ function placeBoat(x,y) {
                 if (boatStart[0] - boatLength + 1 < 0) return;
                 boatStart[0] = boatStart[0] - boatLength + 1;
             }
-            submitData('@routes.Application.placeBoat',{'player': player, 'x': boatStart[0], 'y': boatStart[1], 'boatLength': boatLength, 'orientation': 'h'});
+            submitData(path,{'player': player, 'x': boatStart[0], 'y': boatStart[1], 'boatLength': boatLength, 'orientation': 'h'});
         }
     }
 }
@@ -124,8 +123,7 @@ function resetHighlights() {
 }
 
 /** function to shoot at a coordinate */
-function shoot(x,y) {
-    var player = '@session.get("id").getOrElse(null)';
+function shoot(x,y,player,path) {
     //alert('Shoot at '+x+','+y);
-    submitData('@routes.Application.shoot',{'player': player, 'x': x, 'y': y})
+    submitData(path,{'player': player, 'x': x, 'y': y})
 }

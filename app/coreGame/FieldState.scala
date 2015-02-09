@@ -1,4 +1,5 @@
-package models
+package coreGame
+
 /** class to keep track of the non-static information about a game field,
   * i.e. which cells have been uncovered by shots */
 class BasicFieldState(val areaSize: Int, val boatCount: Array[Int], val totalBoatCount: Int) {

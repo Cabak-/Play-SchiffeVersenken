@@ -1,4 +1,5 @@
-package models
+package coreGame
+
 import PlayerMessages._
 
 /** trait to control the gameplay */
