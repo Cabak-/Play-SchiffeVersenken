@@ -49,10 +49,10 @@ class GameState(fieldSize: Int, val player1: Player, val player2: Player, boatCo
       if (iterator + boatCount(l) >= next) {
         return l
       } else {
-        return calculateLength(iterator+boatCount(l),next,l+1)
+        return calculateLength(iterator+boatCount(l),next,l-1)
       }
     }
-    return calculateLength(0,nextID,1)
+    return calculateLength(0,nextID,5)
   }
 
   /** checks if it is a player's turn */
