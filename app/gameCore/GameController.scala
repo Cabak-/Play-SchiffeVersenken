@@ -151,14 +151,14 @@ class ConsoleGameController(val id: String, override val fieldSize: Int, overrid
 		};
 		// demand player 1 to place all of his boats
 		for (l <- 1 until boatCount.length) {
-			iterateBoatPlacements(player1,l,boatCount(l))
+			iterateBoatPlacements(player1,6-l,boatCount(6-l))
 		}
 
 		// switch to player 2
 		player2.requestEnter
 		// demand player 2 to place all of his boats
 		for (l <- 1 until boatCount.length) {
-			iterateBoatPlacements(player2,l,boatCount(l))
+			iterateBoatPlacements(player2,6-l,boatCount(6-l))
 		}
 
 		// initialize the field states
